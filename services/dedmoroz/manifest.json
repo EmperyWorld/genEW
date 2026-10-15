@@ -1,0 +1,28 @@
+{
+  "name": "dedmoroz",
+  "version": "0.1.0",
+  "features": [
+    "health",
+    "companion_chat",
+    "nervas_peer",
+    "identity_gated_writes"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [
+    "empery_intelligence_core",
+    "identity_service"
+  ],
+  "publishes": [
+    "dedmoroz.message.created"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": true,
+    "skip_reason": null,
+    "feature_key": "dedmoroz",
+    "route": "/ops/dedmoroz",
+    "nav_label_key": "nav.dedmoroz",
+    "bff_prefix": "/api/v1/dedmoroz",
+    "lab": false
+  }
+}

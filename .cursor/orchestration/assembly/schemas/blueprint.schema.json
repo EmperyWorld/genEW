@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://empery.local/assembly/blueprint.schema.json",
+  "title": "BlueprintContract",
+  "type": "object",
+  "required": [
+    "version",
+    "service_name",
+    "scaffold_profile",
+    "target_component_tree",
+    "data_requirements"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "service_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "scaffold_profile": { "type": "string", "minLength": 1 },
+    "recipe_packs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "assembly_mode": {
+      "type": "string",
+      "enum": ["config_driven", "legacy"]
+    },
+    "target_module": {
+      "type": "string",
+      "enum": ["Dashboard_Standard", "Companion_Chat", "Studio_Job", "Generic"]
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["light", "dark", "system"]
+    },
+    "target_component_tree": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/tree_node" }
+    },
+    "data_requirements": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/data_requirement" }
+    },
+    "layout_rules": { "type": "object" }
+  },
+  "definitions": {
+    "tree_node": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": ["Layout", "Container", "Widget", "Atom"]
+        },
+        "widget_type": {
+          "type": "string",
+          "enum": ["card", "chart", "table", "metric", "header", "sidebar"]
+        },
+        "props": { "type": "object" },
+        "children": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "allow_reorder": { "type": "boolean" },
+            "required_data_keys": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "data_requirement": {
+      "type": "object",
+      "required": ["endpoint", "method"],
+      "additionalProperties": true,
+      "properties": {
+        "endpoint": { "type": "string", "minLength": 1 },
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+        },
+        "schema_version": { "type": "string" }
+      }
+    }
+  }
+}

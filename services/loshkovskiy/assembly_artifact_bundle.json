@@ -1,0 +1,88 @@
+{
+  "version": "1",
+  "service_name": "loshkovskiy",
+  "assembler_version": "v1",
+  "widget_count": 3,
+  "created_at": "2026-10-06T09:29:02.453701+00:00",
+  "workspace_contract": "shared_fs",
+  "freeze_relpath": "services/loshkovskiy/assembly_freeze.json",
+  "freeze_files": {
+    "apps/empery_desktop/src/shell/mounts/loshkovskiy.tsx": "ef80b589240238ceaa9dbf97d3ec8108a54fa5a877bc3fa354c4d79410c75557",
+    "apps/empery_control_center/src/features/loshkovskiy/LoshkovskiyPage.tsx": "fc866acc08cfb098acf560472f922ca871c2876513837e64081488b91b2b5ca6",
+    "services/loshkovskiy/assembly_runtime.json": "3fefd5d9d57b62a655544adad68bba4c42ef1c039eb7ca116eaba48d9d506696",
+    "apps/empery_desktop/src/assembly_lib/BaseCard.tsx": "26b2581339f1243b0ef22b93e888853d344148781d65c413db5005e15717f135",
+    "apps/empery_desktop/src/assembly_lib/BaseChart.tsx": "758d318bd6acc7ac4c687efe0e830f172c4a92883afe695fcbab3988c4624c95",
+    "apps/empery_desktop/src/assembly_lib/BaseChatPanel.tsx": "f79472312a6734a45db41babbc82f46fbf4426e6401bf8c1e7697dbd525b2da3",
+    "apps/empery_desktop/src/assembly_lib/BaseComposer.tsx": "2e6fee1d9fd2ae18aca71f8a1faf203ef470050910818f0816239af757e92c1c",
+    "apps/empery_desktop/src/assembly_lib/BaseJobForm.tsx": "09107544aeecb50b0fb8f8b786cf292c319ed5296e9fefbe28b8071ab549fbd2",
+    "apps/empery_desktop/src/assembly_lib/BaseJobList.tsx": "0a0b2fdd8acbd98b298615ede65271f7652bbd93ea3bbddbeb8d5bde251ffce0",
+    "apps/empery_desktop/src/assembly_lib/BaseLayout.tsx": "f14c579f74cf4fe072416bc3f78c2d8e3ce7e096429719b3527ed256dfe7348f",
+    "apps/empery_desktop/src/assembly_lib/BaseMetricTile.tsx": "58f30d5009158b1e6c8bd93b729613a8081b83eee582740563e6b85678da96c1",
+    "apps/empery_desktop/src/assembly_lib/index.ts": "1abe93f00b070382af285ce733c533c13442620902a452122722cd5d4dfc506b",
+    "apps/empery_control_center/src/assembly_lib/BaseCard.tsx": "2dae0eaf2e4cdb54687f921bdf9e72b698f4790d994d14c6d2dd04fe9a73e22e",
+    "apps/empery_control_center/src/assembly_lib/BaseChart.tsx": "2d6d60ff1990e0505118525c1b89ec18002b9522f3f254c96893ec36b9c98fb0",
+    "apps/empery_control_center/src/assembly_lib/BaseChatPanel.tsx": "f79472312a6734a45db41babbc82f46fbf4426e6401bf8c1e7697dbd525b2da3",
+    "apps/empery_control_center/src/assembly_lib/BaseComposer.tsx": "2e6fee1d9fd2ae18aca71f8a1faf203ef470050910818f0816239af757e92c1c",
+    "apps/empery_control_center/src/assembly_lib/BaseJobForm.tsx": "09107544aeecb50b0fb8f8b786cf292c319ed5296e9fefbe28b8071ab549fbd2",
+    "apps/empery_control_center/src/assembly_lib/BaseJobList.tsx": "0a0b2fdd8acbd98b298615ede65271f7652bbd93ea3bbddbeb8d5bde251ffce0",
+    "apps/empery_control_center/src/assembly_lib/BaseLayout.tsx": "eba868167ed06c2669aef4cd8258fae21b4f67fb496cb49443f38e98f93a9385",
+    "apps/empery_control_center/src/assembly_lib/BaseMetricTile.tsx": "4415a8bb21b2cec8d6df8c0cdc5b2483854af4b79de5c7c5dd080ca5036de735",
+    "apps/empery_control_center/src/assembly_lib/index.ts": "1abe93f00b070382af285ce733c533c13442620902a452122722cd5d4dfc506b"
+  },
+  "written": [
+    {
+      "relpath": "app/.cursor/orchestration/eic/peer_env_matrix.json",
+      "kind": "artifact"
+    },
+    {
+      "relpath": "apps/empery_desktop/atoms/loshkovskiy/DashboardFavoritesSlotBody.tsx",
+      "kind": "tsx",
+      "sha256": "ba6ac2a549797a8013ec29573f930fc3a41eb5113d2ab719c71887c729b349a5"
+    },
+    {
+      "relpath": "apps/empery_desktop/atoms/loshkovskiy/dashboardWidgetBody.tsx",
+      "kind": "tsx",
+      "sha256": "a59e74be43a8d5d36ff3f3c00c6912a63fc7e67ab59e37261b5f404e24116014"
+    },
+    {
+      "relpath": "services/loshkovskiy/src/integration/atoms/SOURCE.md",
+      "kind": "extract",
+      "sha256": "7d8a444f1e45dbd192b0b009490f2c69436bff412c5beb97cb3fa846c6afc196"
+    },
+    {
+      "relpath": "services/loshkovskiy/src/integration/atoms/dashboard_service.py",
+      "kind": "extract",
+      "sha256": "4ae635e6ec37e74a5a2b958e9ae8a42918d7b14bc246b3eb00a05c092d7ae49b"
+    },
+    {
+      "relpath": "services/loshkovskiy/src/integration/atoms/ATOMS_PROVENANCE.md",
+      "kind": "extract",
+      "sha256": "90171c33ec0ae818d8540e0f5eb85b7f3c79b6bdcf99d3b9ac70dc51618217d2"
+    },
+    {
+      "relpath": "services/loshkovskiy/assembly_runtime.json",
+      "kind": "stamp",
+      "sha256": "3fefd5d9d57b62a655544adad68bba4c42ef1c039eb7ca116eaba48d9d506696"
+    },
+    {
+      "relpath": "apps/empery_desktop/src/shell/mounts/loshkovskiy.tsx",
+      "kind": "tsx",
+      "sha256": "ef80b589240238ceaa9dbf97d3ec8108a54fa5a877bc3fa354c4d79410c75557"
+    },
+    {
+      "relpath": "apps/empery_control_center/src/features/loshkovskiy/LoshkovskiyPage.tsx",
+      "kind": "tsx",
+      "sha256": "fc866acc08cfb098acf560472f922ca871c2876513837e64081488b91b2b5ca6"
+    },
+    {
+      "relpath": "services/loshkovskiy/assembly_freeze.json",
+      "kind": "freeze",
+      "sha256": "1ac1833c7042855688a8687188b5e091de33e33edcbc846e87fa9a789f652403"
+    },
+    {
+      "relpath": "services/loshkovskiy/assembly_artifact_bundle.json",
+      "kind": "bundle",
+      "sha256": "1b0f987201a68bf1d01c8d68f87e6a61b32a360ae049b8c7e1af172c98055a90"
+    }
+  ]
+}

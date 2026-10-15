@@ -1,0 +1,30 @@
+# Optional local llama.cpp OpenAI-compatible server for EIC Nervas (Local provider).
+# Usage:
+#   docker compose -f services/empery_intelligence_core/docker-compose.llama.yml up -d
+# Then point EIC at it:
+#   export EIC_LLM_BASE_URL=http://127.0.0.1:8080
+#   export EIC_PROVIDER=local
+#
+# Replace MODEL_PATH / image with your preferred GGUF + llama.cpp server image.
+
+services:
+  llama-cpp:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount a GGUF model directory from the host:
+      - ${EIC_LLAMA_MODEL_DIR:-./.data/eic/models}:/models:ro
+    environment:
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+    command:
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "-m"
+      - "${EIC_LLAMA_MODEL_FILE:-/models/model.gguf}"
+      - "-c"
+      - "4096"
+    # healthcheck optional — many llama.cpp images lack curl

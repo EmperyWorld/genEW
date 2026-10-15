@@ -1,0 +1,15 @@
+genEW · Empery World
+
+Copyright (c) 2026 Кундухов Артём Георгиевич (po&T)
+Copyright (c) 2026 Кундухова Татьяна Александровна (TZBrand)
+SPDX-License-Identifier: MIT
+
+First-party code defaults to MIT unless a file or component states otherwise.
+Dependencies, imported reference material, model weights, fonts and media
+retain their original license terms. Preserve upstream notices. This root
+license does not relicense third-party material or override narrower notices.
+Previously distributed versions retain their delivered license terms.
+
+The public source snapshot includes product recipe/schema/template catalogs,
+without old history, local secrets, private agent configuration, working jobs,
+reports, models, caches or GitHub Actions workflows.

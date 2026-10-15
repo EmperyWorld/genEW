@@ -1,0 +1,39 @@
+# Assembler-writable paths for config_driven profiles (freeze-list).
+# Profiles: ops_dashboard, companion_chat, studio_job — deny paths shared.
+# LLM write_file to these paths → EIC_CRITICAL_VIOLATION.
+# Only Assembler (Mechanics) may mutate them after scaffold.
+
+version: "1"
+profiles:
+  - ops_dashboard
+  - companion_chat
+  - studio_job
+# Legacy single-profile fields kept for loaders that still read them.
+profile: ops_dashboard
+target_module: Dashboard_Standard
+
+assembler_writable:
+  - "apps/empery_desktop/src/shell/mounts/{service}.tsx"
+  - "apps/empery_control_center/src/features/{kebab}/{Pascal}Page.tsx"
+  - "services/{service}/assembly_runtime.json"
+  - "services/{service}/assembly_freeze.json"
+
+deny_llm_writes:
+  - "services/"
+  - "deploy/services/"
+  - "apps/empery_control_center/src/features/"
+  - "apps/empery_control_center/src/api/"
+  - "apps/empery_control_center/src/routes/"
+  - "apps/empery_desktop/src/shell/mounts/"
+  - "apps/empery_desktop/src/shell/registry"
+  - "apps/empery_desktop/src/assembly_lib/"
+  - "apps/empery_control_center/src/assembly_lib/"
+
+scaffold_owned_immutable:
+  - "apps/empery_desktop/src/assembly_lib/"
+  - "apps/empery_control_center/src/assembly_lib/"
+  - ".cursor/orchestration/assembly/templates/"
+  - ".cursor/orchestration/assembly/schemas/"
+
+slots:
+  - widgets

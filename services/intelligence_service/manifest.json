@@ -1,0 +1,28 @@
+{
+  "name": "intelligence_service",
+  "version": "0.1.0",
+  "features": [
+    "postgres",
+    "ai_insights",
+    "event_subscribe_task_created",
+    "event_publish_insight_generated"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [],
+  "publishes": [
+    "task.insight.generated"
+  ],
+  "subscribes": [
+    "task.created",
+    "task.updated"
+  ],
+  "ui": {
+    "required": false,
+    "skip_reason": "Trinity intelligence peer \u2014 no ECC product feature; health/registry is the readiness surface.",
+    "feature_key": "intelligence_service",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

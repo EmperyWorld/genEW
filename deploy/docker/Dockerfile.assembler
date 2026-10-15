@@ -1,0 +1,58 @@
+# syntax=docker/dockerfile:1
+# Assembler Mechanics sidecar — Python + Node (Babel CLI / tsc), gRPC entry.
+# Build: podman build --format docker -f deploy/docker/Dockerfile.assembler --target runtime \
+#   -t empery/empery_assembler .
+# Tip: export BUILDAH_FORMAT=docker so HEALTHCHECK is retained under Podman.
+
+FROM docker.io/library/python:3.12-slim-bookworm AS deps
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.runtime.txt /tmp/requirements.runtime.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r /tmp/requirements.runtime.txt
+
+FROM docker.io/library/python:3.12-slim-bookworm AS runtime
+
+ARG SERVICE_PORT=8011
+ARG GRPC_PORT=50051
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PORT=${SERVICE_PORT} \
+    ASSEMBLER_HEALTH_PORT=${SERVICE_PORT} \
+    ASSEMBLER_GRPC_PORT=${GRPC_PORT} \
+    ASSEMBLER_GRPC_HOST=0.0.0.0 \
+    ASSEMBLER_HEALTH_HOST=0.0.0.0 \
+    LOG_LEVEL=INFO
+
+RUN groupadd --gid 1000 empery \
+    && useradd --uid 1000 --gid empery --create-home --shell /usr/sbin/nologin empery \
+    && mkdir -p /app /data /var/log/empery \
+    && chown -R empery:empery /app /data /var/log/empery \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && node -v && npm -v \
+    && apt-get purge -y gnupg \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=deps /opt/venv /opt/venv
+
+WORKDIR /app
+COPY --chown=empery:empery core /app/core
+COPY --chown=empery:empery services /app/services
+
+USER 1000:1000
+EXPOSE ${SERVICE_PORT} ${GRPC_PORT}
+
+# Health HTTP is /health (not /api/v1/health).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request,os; urllib.request.urlopen('http://127.0.0.1:'+os.environ.get('ASSEMBLER_HEALTH_PORT',os.environ.get('PORT','8011'))+'/health', timeout=3)" || exit 1
+
+CMD ["python", "-m", "services.empery_assembler.src.main"]

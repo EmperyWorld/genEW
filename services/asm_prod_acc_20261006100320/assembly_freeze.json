@@ -1,0 +1,27 @@
+{
+  "service_name": "asm_prod_acc_20261006100320",
+  "version": "1",
+  "files": {
+    "apps/empery_desktop/src/shell/mounts/asm_prod_acc_20261006100320.tsx": "9be03e841843d06007303576a9cc8b75a1b58cbe5f0e0d026bf1edb4c6a8ea1a",
+    "apps/empery_control_center/src/features/asm-prod-acc-20261006100320/AsmProdAcc20261006100320Page.tsx": "5bd55c419c3ec8ce149aa80ef9a201abeec198e64a474d210be6bfb0e1c3c2cf",
+    "services/asm_prod_acc_20261006100320/assembly_runtime.json": "097b6c98f6e593246cfa81626ba910110a8b3f6a318af5d620536ac5ebd6a7fa",
+    "apps/empery_desktop/src/assembly_lib/BaseCard.tsx": "26b2581339f1243b0ef22b93e888853d344148781d65c413db5005e15717f135",
+    "apps/empery_desktop/src/assembly_lib/BaseChart.tsx": "758d318bd6acc7ac4c687efe0e830f172c4a92883afe695fcbab3988c4624c95",
+    "apps/empery_desktop/src/assembly_lib/BaseChatPanel.tsx": "f79472312a6734a45db41babbc82f46fbf4426e6401bf8c1e7697dbd525b2da3",
+    "apps/empery_desktop/src/assembly_lib/BaseComposer.tsx": "2e6fee1d9fd2ae18aca71f8a1faf203ef470050910818f0816239af757e92c1c",
+    "apps/empery_desktop/src/assembly_lib/BaseJobForm.tsx": "09107544aeecb50b0fb8f8b786cf292c319ed5296e9fefbe28b8071ab549fbd2",
+    "apps/empery_desktop/src/assembly_lib/BaseJobList.tsx": "0a0b2fdd8acbd98b298615ede65271f7652bbd93ea3bbddbeb8d5bde251ffce0",
+    "apps/empery_desktop/src/assembly_lib/BaseLayout.tsx": "f14c579f74cf4fe072416bc3f78c2d8e3ce7e096429719b3527ed256dfe7348f",
+    "apps/empery_desktop/src/assembly_lib/BaseMetricTile.tsx": "58f30d5009158b1e6c8bd93b729613a8081b83eee582740563e6b85678da96c1",
+    "apps/empery_desktop/src/assembly_lib/index.ts": "1abe93f00b070382af285ce733c533c13442620902a452122722cd5d4dfc506b",
+    "apps/empery_control_center/src/assembly_lib/BaseCard.tsx": "2dae0eaf2e4cdb54687f921bdf9e72b698f4790d994d14c6d2dd04fe9a73e22e",
+    "apps/empery_control_center/src/assembly_lib/BaseChart.tsx": "2d6d60ff1990e0505118525c1b89ec18002b9522f3f254c96893ec36b9c98fb0",
+    "apps/empery_control_center/src/assembly_lib/BaseChatPanel.tsx": "f79472312a6734a45db41babbc82f46fbf4426e6401bf8c1e7697dbd525b2da3",
+    "apps/empery_control_center/src/assembly_lib/BaseComposer.tsx": "2e6fee1d9fd2ae18aca71f8a1faf203ef470050910818f0816239af757e92c1c",
+    "apps/empery_control_center/src/assembly_lib/BaseJobForm.tsx": "09107544aeecb50b0fb8f8b786cf292c319ed5296e9fefbe28b8071ab549fbd2",
+    "apps/empery_control_center/src/assembly_lib/BaseJobList.tsx": "0a0b2fdd8acbd98b298615ede65271f7652bbd93ea3bbddbeb8d5bde251ffce0",
+    "apps/empery_control_center/src/assembly_lib/BaseLayout.tsx": "eba868167ed06c2669aef4cd8258fae21b4f67fb496cb49443f38e98f93a9385",
+    "apps/empery_control_center/src/assembly_lib/BaseMetricTile.tsx": "4415a8bb21b2cec8d6df8c0cdc5b2483854af4b79de5c7c5dd080ca5036de735",
+    "apps/empery_control_center/src/assembly_lib/index.ts": "1abe93f00b070382af285ce733c533c13442620902a452122722cd5d4dfc506b"
+  }
+}

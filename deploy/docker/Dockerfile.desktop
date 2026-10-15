@@ -1,0 +1,54 @@
+# syntax=docker/dockerfile:1
+# Empery Desktop host UI — multi-stage build + unprivileged nginx.
+# Tip: export BUILDAH_FORMAT=docker so HEALTHCHECK is retained under Podman.
+
+FROM docker.io/library/node:22-bookworm-slim AS build
+
+WORKDIR /app
+COPY apps/empery_desktop/package.json \
+     apps/empery_desktop/package-lock.json* \
+     apps/empery_desktop/pnpm-lock.yaml* \
+     apps/empery_desktop/pnpm-workspace.yaml* \
+     ./
+RUN if [ -f pnpm-lock.yaml ]; then \
+      corepack enable && corepack prepare pnpm@latest --activate \
+      && pnpm install --frozen-lockfile; \
+    elif [ -f package-lock.json ]; then npm ci; \
+    else npm install; fi
+
+COPY apps/empery_desktop/ ./
+
+# Optional bake for browser clients. Prefer unset so peerApiBase remaps to page host.
+ARG VITE_DESKTOP_SHELL_API_BASE=
+ARG VITE_ECC_API_BASE=
+ARG VITE_ECC_UI_BASE=
+ARG VITE_EIC_API_BASE=
+ARG VITE_IMAGE_STUDIO_API_BASE=
+ARG VITE_VIDEO_STUDIO_API_BASE=
+ARG VITE_MUSIC_FORGE_API_BASE=
+ARG VITE_SITE_STUDIO_API_BASE=
+ARG VITE_AI_CHAT_API_BASE=
+ARG VITE_DEDMOROZ_API_BASE=
+ENV VITE_DESKTOP_SHELL_API_BASE=${VITE_DESKTOP_SHELL_API_BASE} \
+    VITE_ECC_API_BASE=${VITE_ECC_API_BASE} \
+    VITE_ECC_UI_BASE=${VITE_ECC_UI_BASE} \
+    VITE_EIC_API_BASE=${VITE_EIC_API_BASE} \
+    VITE_IMAGE_STUDIO_API_BASE=${VITE_IMAGE_STUDIO_API_BASE} \
+    VITE_VIDEO_STUDIO_API_BASE=${VITE_VIDEO_STUDIO_API_BASE} \
+    VITE_MUSIC_FORGE_API_BASE=${VITE_MUSIC_FORGE_API_BASE} \
+    VITE_SITE_STUDIO_API_BASE=${VITE_SITE_STUDIO_API_BASE} \
+    VITE_AI_CHAT_API_BASE=${VITE_AI_CHAT_API_BASE} \
+    VITE_DEDMOROZ_API_BASE=${VITE_DEDMOROZ_API_BASE}
+
+RUN if command -v pnpm >/dev/null 2>&1; then pnpm run build; else npm run build; fi
+
+FROM docker.io/nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+
+COPY deploy/docker/nginx-ecc.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 8080
+USER 101
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:8080/healthz || exit 1

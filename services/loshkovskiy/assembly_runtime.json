@@ -1,0 +1,18 @@
+{
+  "service_name": "loshkovskiy",
+  "blueprint_id": "loshkovskiy",
+  "blueprint_version": "1.0.0",
+  "target_module": "Dashboard_Standard",
+  "scaffold_profile": "ops_dashboard",
+  "composition_ids": [
+    "status_metric",
+    "activity_chart",
+    "agenda_table"
+  ],
+  "data_sources": [
+    "/api/v1/kruzenstern/status",
+    "value"
+  ],
+  "assembler_version": "v1",
+  "widget_count": 3
+}

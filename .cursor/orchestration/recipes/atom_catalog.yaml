@@ -1,0 +1,228 @@
+# Machine-readable atom catalog — pack → EliteEW upstream → reference extract → Empery targets.
+# Hands genesis uses extract_globs under reference/; corpus sync may use upstream_eliteew_globs.
+# Never edit EliteEW in place. Never import reference/ at runtime.
+
+eliteew_root_env: ELITEEW_ROOT
+eliteew_root_default: /home/owned/powered_by_emperyworld/EliteEW
+
+packs:
+  - pack: ewa_companion
+    scaffold_profile: companion_chat
+    upstream_eliteew_globs:
+      - web/frontend/src/features/ewa/EwaCompanionChatPanel.tsx
+      - web/frontend/src/features/ewa/EwaCompanionChatMarkdown.tsx
+      - web/frontend/src/features/desktop-ai-chat/DesktopAiChatApp.tsx
+      - api/ewa_platform/gateways/routers/companion_chat.py
+      - api/domains/chat.py
+    extract_globs:
+      - reference/eliteew/packs/ewa_companion/upstream_fe/**
+      - reference/eliteew/packs/ewa_companion/upstream_api/**
+      - reference/eliteew/packs/ewa_companion/slim/**
+      - reference/eliteew/packs/ewa_companion/desktop_mount/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: nervas_llm_peer
+    scaffold_profile: peer_http
+    upstream_eliteew_globs: []
+    extract_globs:
+      - core/integration/nervas.py
+    empery_targets:
+      - services/{service_name}/src/integration/
+    transforms:
+      - rewrite_service_token
+
+  - pack: ewgen_factory
+    scaffold_profile: health_probe
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/ewgen/SOURCE.md
+      - reference/ewgen/docs/**
+    empery_targets:
+      - services/{service_name}/src/integration/atoms/
+    transforms:
+      - strip_reference_imports
+
+  - pack: studios
+    scaffold_profile: studio_job
+    upstream_eliteew_globs:
+      - web/frontend/src/pages/ImageStudio/**
+      - api/domains/creative.py
+    extract_globs:
+      - reference/eliteew/packs/studios/upstream_fe/**
+      - reference/eliteew/packs/studios/upstream_api/**
+      - reference/eliteew/packs/studios/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: video_studio
+    scaffold_profile: video_studio
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/video_studio/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+
+  - pack: music_forge
+    scaffold_profile: music_forge
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/music_forge/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+
+  - pack: site_studio
+    scaffold_profile: site_studio
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/site_studio/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: ewrp
+    scaffold_profile: presentation_ai
+    upstream_eliteew_globs:
+      - api/routers/ewrp.py
+      - api/schemas/ewrp.py
+      - web/frontend/src/services/ewrpApi.ts
+      - web/frontend/src/components/EWRP/EwrpPdfPresentationViewer.tsx
+    extract_globs:
+      - reference/eliteew/packs/ewrp/templates/**
+      - reference/eliteew/packs/ewrp/upstream_api/**
+      - reference/eliteew/packs/ewrp/upstream_fe/**
+      - reference/eliteew/packs/ewrp/desktop_mount/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: doc_editor
+    scaffold_profile: editor_local
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/doc_editor/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+    transforms:
+      - strip_reference_imports
+
+  - pack: notes_crud
+    scaffold_profile: editor_local
+    upstream_eliteew_globs:
+      - web/frontend/src/components/UltimateDocEditor/EditorCore/TiptapEditor.tsx
+      - web/frontend/src/components/UltimateDocEditor/hooks/useDocEditorTipTapContentSync.ts
+    extract_globs:
+      - reference/eliteew/packs/notes_crud/**
+      - reference/eliteew/packs/doc_editor/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: ops_dashboard
+    scaffold_profile: ops_dashboard
+    upstream_eliteew_globs:
+      - web/frontend/src/pages/Desktop/components/DashboardFavoritesSlotBody.tsx
+      - web/frontend/src/pages/MarketingCabinet/dashboard-widgets/dashboardWidgetBody.tsx
+      - api/services/marketing_cabinet/dashboard_service.py
+    extract_globs:
+      - reference/eliteew/packs/ops_dashboard/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: notes_tool
+    scaffold_profile: editor_local
+    upstream_eliteew_globs:
+      - web/frontend/src/components/UltimateDocEditor/EditorCore/TiptapEditor.tsx
+    extract_globs:
+      - reference/eliteew/packs/notes_crud/**
+      - reference/eliteew/packs/doc_editor/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: task_board
+    scaffold_profile: task_board
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/task_board/**
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: research_report
+    scaffold_profile: research_report
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/research_report/**
+      - core/integration/nervas.py
+    empery_targets:
+      - apps/empery_desktop/atoms/
+      - services/{service_name}/
+    transforms:
+      - strip_reference_imports
+      - rewrite_service_token
+
+  - pack: desktop_shell_kernel
+    scaffold_profile: shell_host
+    upstream_eliteew_globs:
+      - web/frontend/src/pages/Desktop/**
+      - api/domains/desktop.py
+    extract_globs:
+      - reference/eliteew/desktop/**
+    empery_targets:
+      - apps/empery_desktop/
+      - services/desktop_shell/
+    transforms:
+      - strip_reference_imports
+
+  - pack: window_snap
+    scaffold_profile: shell_host
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/window_snap/**
+    empery_targets:
+      - apps/empery_desktop/src/shell/
+    transforms: []
+
+  - pack: comfy_image_peer
+    scaffold_profile: image_studio
+    upstream_eliteew_globs: []
+    extract_globs:
+      - reference/eliteew/packs/studios/comfyui/**
+    empery_targets:
+      - services/{service_name}/
+    transforms:
+      - rewrite_service_token

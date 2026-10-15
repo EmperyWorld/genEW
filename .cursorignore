@@ -1,0 +1,24 @@
+# Keep Cursor index out of Hands dumps + local discard.
+# Do NOT ignore seed designs, program audits, rules/skills, or product source.
+.cursor/orchestration/eic/
+.cursor/orchestration/jobs/
+.cursor/orchestration/audit/
+.cursor/orchestration/intents/
+.cursor/orchestration/designs/_deleted/
+.cursor/orchestration/designs/p[0-9]*_*
+.cursor/orchestration/designs/unnamed_service_*
+.cursor/orchestration/designs/recipe_probe_*
+.cursor/orchestration/designs/maket_service_*
+.cursor/orchestration/designs/marketing_cabinet_*
+.cursor/orchestration/designs/marketing_engine_*
+.cursor/orchestration/designs/demo_probe_*
+.cursor/orchestration/designs/karaoke_*
+.cursor/orchestration/reports/p[0-9]*_*_verify.md
+.cursor/orchestration/reports/unnamed_service_verify.md
+.cursor/orchestration/reports/recipe_probe_svc_verify.md
+.cursor/orchestration/reports/maket_service_ai_verify.md
+.cursor/orchestration/reports/marketing_cabinet_verify.md
+.cursor/orchestration/reports/demo_probe_svc_verify.md
+apps/empery_desktop/atoms/
+compose.reflex.yml
+trash/

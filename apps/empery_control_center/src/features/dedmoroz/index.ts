@@ -1,0 +1,1 @@
+export { DedmorozPage } from "./DedmorozPage";

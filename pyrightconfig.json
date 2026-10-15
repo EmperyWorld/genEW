@@ -1,0 +1,60 @@
+{
+  "include": [
+    "core",
+    "services",
+    "scripts",
+    "tests",
+    "main.py",
+    "conftest.py",
+    ".cursor/hooks"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.venv",
+    "**/venv",
+    "**/.pytest_cache",
+    "**/.ruff_cache",
+    "reference",
+    "apps",
+    "deploy",
+    "trash",
+    "services/**/src/integration/atoms",
+    "**/alembic/**",
+    ".cursor/orchestration",
+    ".data"
+  ],
+  "extraPaths": [
+    ".",
+    "core",
+    "services",
+    ".cursor/hooks/lib"
+  ],
+  "pythonVersion": "3.14",
+  "pythonPlatform": "Linux",
+  "venvPath": ".",
+  "venv": ".venv",
+  "typeCheckingMode": "standard",
+  "useLibraryCodeForTypes": true,
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "none",
+  "reportMissingTypeStubs": "none",
+  "reportAny": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownMemberType": "none",
+  "reportExplicitAny": "none",
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "pythonVersion": "3.14",
+      "extraPaths": [
+        ".",
+        "core",
+        "services",
+        ".cursor/hooks/lib"
+      ]
+    }
+  ]
+}

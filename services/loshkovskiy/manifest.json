@@ -1,0 +1,29 @@
+{
+  "name": "loshkovskiy",
+  "version": "0.1.0",
+  "features": [
+    "health",
+    "reflex_scaffold",
+    "user_created",
+    "ops_dashboard",
+    "postgres"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [
+    "empery_intelligence_core",
+    "identity_service"
+  ],
+  "publishes": [
+    "metric.metric.created"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": true,
+    "skip_reason": null,
+    "feature_key": "loshkovskiy",
+    "route": "/ops/loshkovskiy",
+    "nav_label_key": "nav.loshkovskiy",
+    "bff_prefix": "/api/v1/loshkovskiy",
+    "lab": false
+  }
+}

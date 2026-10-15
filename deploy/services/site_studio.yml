@@ -1,0 +1,28 @@
+services:
+  site_studio:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.site_studio.src.api.main:create_app
+        SERVICE_PORT: "8024"
+    restart: unless-stopped
+    user: "1000:1000"
+    networks: [empery_net]
+    ports:
+      - "8024:8024"
+    depends_on:
+      - redis
+      - empery_intelligence_core
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      EVENT_BUS_REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      EVENT_BUS_ALLOW_IN_MEMORY: "false"
+      AUTO_CREATE_TABLES: "false"
+      PYTHONUNBUFFERED: "1"
+      PORT: "8024"
+      SITE_STUDIO_PORT: "8024"
+      EIC_API_BASE: ${EIC_API_BASE:-http://empery_intelligence_core:8007}
+      SITE_STUDIO_CORS_ORIGINS: ${SITE_STUDIO_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}

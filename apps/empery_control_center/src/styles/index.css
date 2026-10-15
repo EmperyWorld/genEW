@@ -1,0 +1,122 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@config "../../tailwind.config.ts";
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow-x: hidden;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    font-family: Manrope, sans-serif;
+    color: var(--ecc-ink);
+    background-color: var(--ecc-void);
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  input,
+  textarea,
+  select {
+    color: var(--ecc-ink);
+    background-color: var(--ecc-field);
+    border-color: var(--ecc-line);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--ecc-ink-faint);
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--ecc-ink);
+    -webkit-box-shadow: 0 0 0 1000px var(--ecc-field) inset;
+    box-shadow: 0 0 0 1000px var(--ecc-field) inset;
+    caret-color: var(--ecc-ink);
+    transition: background-color 99999s ease-in-out 0s;
+  }
+
+  /* Quiet command-deck atmosphere: vignette + low-contrast grid */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(
+        ellipse 120% 80% at 50% -10%,
+        rgba(61, 220, 151, 0.06),
+        transparent 55%
+      ),
+      radial-gradient(ellipse at center, transparent 40%, var(--ecc-void) 100%),
+      linear-gradient(var(--ecc-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ecc-line) 1px, transparent 1px);
+    background-size:
+      auto,
+      auto,
+      48px 48px,
+      48px 48px;
+    background-color: var(--ecc-field);
+    opacity: 0.55;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ecc-focus-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--ecc-signal-soft);
+    color: var(--ecc-ink);
+  }
+}
+
+@layer utilities {
+  .ecc-stage {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  /* Soft vignette inside ecosystem map field */
+  .ecc-map-vignette::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(
+      ellipse 85% 75% at 50% 45%,
+      transparent 40%,
+      rgba(7, 10, 15, 0.45) 100%
+    );
+  }
+}

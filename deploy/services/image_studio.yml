@@ -1,0 +1,30 @@
+services:
+  image_studio:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.image_studio.src.api.main:create_app
+        SERVICE_PORT: "8021"
+    restart: unless-stopped
+    user: "1000:1000"
+    networks: [empery_net]
+    ports:
+      - "8021:8021"
+    depends_on:
+      - redis
+    volumes:
+      - ./services/image_studio/workflows:/app/services/image_studio/workflows:ro,z
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      EVENT_BUS_REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      EVENT_BUS_ALLOW_IN_MEMORY: "false"
+      AUTO_CREATE_TABLES: "false"
+      PYTHONUNBUFFERED: "1"
+      PORT: "8021"
+      IMAGE_STUDIO_PORT: "8021"
+      # Comfy on host — host.containers.internal from bridge (LAN IP hairpins fail).
+      COMFY_BASE_URL: ${COMFY_BASE_URL:-http://host.containers.internal:31003}
+      IMAGE_STUDIO_CORS_ORIGINS: ${IMAGE_STUDIO_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}

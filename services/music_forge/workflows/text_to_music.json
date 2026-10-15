@@ -1,0 +1,93 @@
+{
+  "202": {
+    "inputs": {
+      "seed": 0,
+      "steps": 50,
+      "cfg": 7,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1,
+      "duration": 150,
+      "infer_method": "ode",
+      "guidance_mode": "apg",
+      "batch_size": 1,
+      "latent_shift": 0,
+      "latent_rescale": 1,
+      "fade_in_duration": 0,
+      "fade_out_duration": 0,
+      "use_tiled_vae": true,
+      "unload_models_after_generate": false,
+      "voice_boost": 0,
+      "apg_eta": 0,
+      "apg_momentum": -0.75,
+      "apg_norm_threshold": 2.5,
+      "guidance_interval": 0.5,
+      "guidance_interval_decay": 0,
+      "min_guidance_scale": 3,
+      "guidance_scale_text": -1,
+      "guidance_scale_lyric": -1,
+      "omega_scale": 0,
+      "erg_scale": 0,
+      "cfg_interval_start": 0,
+      "cfg_interval_end": 1,
+      "shift": 3,
+      "model": ["205", 0],
+      "positive": ["203", 0],
+      "negative": ["203", 1],
+      "vae": ["205", 2]
+    },
+    "class_type": "AceStepSFTGenerate",
+    "_meta": {
+      "title": "MusicForge MVP · AceStep 1.5 SFT Generate"
+    }
+  },
+  "203": {
+    "inputs": {
+      "caption": "",
+      "lyrics": "",
+      "instrumental": false,
+      "seed": 0,
+      "duration": 150,
+      "bpm": 112,
+      "timesignature": "4",
+      "language": "ru",
+      "keyscale": "A minor",
+      "generate_audio_codes": true,
+      "lm_cfg_scale": 1.9,
+      "lm_temperature": 0.78,
+      "lm_top_p": 0.9,
+      "lm_top_k": 0,
+      "lm_min_p": 0,
+      "lm_negative_prompt": "",
+      "clip": ["205", 1]
+    },
+    "class_type": "AceStepSFTTextEncode",
+    "_meta": {
+      "title": "MusicForge MVP · AceStep 1.5 SFT TextEncode"
+    }
+  },
+  "205": {
+    "inputs": {
+      "diffusion_model": "acestep_v1.5_xl_sft_bf16.safetensors",
+      "text_encoder_1": "qwen_0.6b_ace15.safetensors",
+      "text_encoder_2": "qwen_4b_ace15.safetensors",
+      "vae_name": "ace_1.5_vae.safetensors"
+    },
+    "class_type": "AceStepSFTModelLoader",
+    "_meta": {
+      "title": "MusicForge MVP · AceStep 1.5 SFT Model Loader"
+    }
+  },
+  "207": {
+    "inputs": {
+      "filename_prefix": "audio/MusicForge_ACE15_MVP_",
+      "quality": "320k",
+      "audioUI": "",
+      "audio": ["202", 5]
+    },
+    "class_type": "SaveAudioMP3",
+    "_meta": {
+      "title": "MusicForge MVP · Save audio"
+    }
+  }
+}

@@ -1,0 +1,326 @@
+syntax = "proto3";
+
+package empery.assembly.v1;
+
+option py_generic_services = false;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// Empery Assembly Mechanics — Phase 1 sidecar contract.
+// SoT companion: .cursor/orchestration/IMPLEMENTATION_PLAN.md
+
+// ---------------------------------------------------------------------------
+// Shared enums / envelopes
+// ---------------------------------------------------------------------------
+
+enum AssemblyMode {
+  ASSEMBLY_MODE_UNSPECIFIED = 0;
+  ASSEMBLY_MODE_CONFIG_DRIVEN = 1;
+  ASSEMBLY_MODE_LEGACY = 2;
+}
+
+enum TargetModule {
+  TARGET_MODULE_UNSPECIFIED = 0;
+  TARGET_MODULE_DASHBOARD_STANDARD = 1;
+  TARGET_MODULE_COMPANION_CHAT = 2;
+  TARGET_MODULE_STUDIO_JOB = 3;
+  TARGET_MODULE_GENERIC = 4;
+}
+
+enum ComponentKind {
+  COMPONENT_KIND_UNSPECIFIED = 0;
+  COMPONENT_KIND_LAYOUT = 1;
+  COMPONENT_KIND_CONTAINER = 2;
+  COMPONENT_KIND_WIDGET = 3;
+  COMPONENT_KIND_ATOM = 4;
+}
+
+enum WidgetType {
+  WIDGET_TYPE_UNSPECIFIED = 0;
+  WIDGET_TYPE_CARD = 1;
+  WIDGET_TYPE_CHART = 2;
+  WIDGET_TYPE_TABLE = 3;
+  WIDGET_TYPE_METRIC = 4;
+  WIDGET_TYPE_HEADER = 5;
+  WIDGET_TYPE_SIDEBAR = 6;
+  WIDGET_TYPE_MESSAGE_LIST = 7;
+  WIDGET_TYPE_COMPOSER = 8;
+  WIDGET_TYPE_JOB_FORM = 9;
+  WIDGET_TYPE_JOB_LIST = 10;
+}
+
+enum VerifyStatus {
+  VERIFY_STATUS_UNSPECIFIED = 0;
+  VERIFY_STATUS_PASSED = 1;
+  VERIFY_STATUS_FAILED = 2;
+}
+
+enum Severity {
+  SEVERITY_UNSPECIFIED = 0;
+  SEVERITY_INFO = 1;
+  SEVERITY_WARNING = 2;
+  SEVERITY_ERROR = 3;
+  SEVERITY_CRITICAL = 4;
+}
+
+enum AssemblyStep {
+  ASSEMBLY_STEP_UNSPECIFIED = 0;
+  ASSEMBLY_STEP_VALIDATE = 1;
+  ASSEMBLY_STEP_SCAFFOLD = 2;
+  ASSEMBLY_STEP_EXTRACT = 3;
+  ASSEMBLY_STEP_STAMP = 4;
+  ASSEMBLY_STEP_INJECT = 5;
+  ASSEMBLY_STEP_FREEZE = 6;
+  ASSEMBLY_STEP_TSC = 7;
+  ASSEMBLY_STEP_RELOAD_HINT = 8;
+  ASSEMBLY_STEP_DONE = 9;
+  ASSEMBLY_STEP_FAILED = 10;
+}
+
+message PropMapping {
+  string prop_name = 1;
+  string source_type = 2; // "static" | "dynamic"
+  google.protobuf.Value value = 3;
+  optional string data_path = 4;
+}
+
+message TreeNode {
+  string id = 1;
+  ComponentKind type = 2;
+  optional WidgetType widget_type = 3;
+  google.protobuf.Struct props = 4;
+  repeated string children = 5;
+  repeated string required_data_keys = 6;
+}
+
+message DataRequirement {
+  string endpoint = 1;
+  string method = 2; // GET|POST|...
+  string schema_version = 3;
+}
+
+message Design {
+  string version = 1;
+  string service_name = 2;
+  string scaffold_profile = 3;
+  repeated string recipe_packs = 4;
+  AssemblyMode assembly_mode = 5;
+  TargetModule target_module = 6;
+  string theme = 7; // light|dark|system
+  repeated TreeNode target_component_tree = 8;
+  repeated DataRequirement data_requirements = 9;
+  google.protobuf.Struct layout_rules = 10;
+}
+
+message CompositionItem {
+  string component_id = 1;
+  optional string component = 2; // Card|Chart|MetricTile|...
+  optional WidgetType widget_type = 3;
+  repeated PropMapping mapping = 4;
+  optional string data_source = 5;
+}
+
+message LayoutOverride {
+  string component_id = 1;
+  map<string, string> style_props = 2;
+}
+
+message AssemblyManifest {
+  string blueprint_id = 1;
+  string blueprint_version = 2;
+  TargetModule target_module = 3;
+  google.protobuf.Struct configuration = 4;
+  repeated CompositionItem composition = 5;
+  repeated LayoutOverride layout_overrides = 6;
+}
+
+message ComponentAtom {
+  string atom_id = 1;
+  string catalog_key = 2;
+  string source_glob = 3;
+  string target_relpath = 4;
+  google.protobuf.Struct metadata = 5;
+}
+
+message WorkspaceRef {
+  string workspace_root = 1;
+  string service_name = 2;
+  string intention_id = 3;
+  string ecc_job_id = 4;
+  string request_id = 5;
+}
+
+message DesignRequest {
+  WorkspaceRef workspace = 1;
+  Design blueprint = 2;
+  AssemblyManifest manifest = 3;
+  optional string blueprint_relpath = 4;
+  optional string manifest_relpath = 5;
+  bool run_scaffold = 6;
+  bool run_extract = 7;
+  bool run_tsc = 8;
+  bool emit_deploy_hint = 9;
+  string assembler_version = 10; // "v1"
+  // Phase 6 content-transfer: attach file bytes on WrittenArtifact (capped).
+  bool include_artifact_bytes = 11;
+}
+
+message WrittenArtifact {
+  string relpath = 1;
+  string kind = 2; // stamp|tsx|freeze|scaffold|extract|bundle
+  optional string sha256 = 3;
+  // Present when DesignRequest.include_artifact_bytes / FetchArtifacts.include_bytes.
+  optional bytes content = 4;
+}
+
+message DeployHint {
+  string service_name = 1;
+  bool refresh_ecc_api = 2;
+  bool compose_up = 3;
+  repeated string bake_apps = 4;
+}
+
+message AssemblyResponse {
+  bool ok = 1;
+  string service_name = 2;
+  string assembler_version = 3;
+  int32 widget_count = 4;
+  repeated WrittenArtifact written = 5;
+  optional DeployHint deploy_hint = 6;
+  optional string error_code = 7;
+  optional string error_message = 8;
+  google.protobuf.Struct details = 9;
+  // Relpath of assembly_artifact_bundle.json when written.
+  optional string artifact_bundle_relpath = 10;
+}
+
+message FetchArtifactsRequest {
+  WorkspaceRef workspace = 1;
+  string service_name = 2;
+  bool include_bytes = 3;
+  // Empty → all entries from assembly_artifact_bundle.json inventory.
+  repeated string relpaths = 4;
+}
+
+message FetchArtifactsResponse {
+  bool ok = 1;
+  string service_name = 2;
+  optional string artifact_bundle_relpath = 3;
+  repeated WrittenArtifact written = 4;
+  optional string error_code = 5;
+  optional string error_message = 6;
+}
+
+message ExtractAdaptRequest {
+  WorkspaceRef workspace = 1;
+  string source_glob = 2;
+  string dest = 3;
+  repeated string transforms = 4;
+  string service_name = 5;
+  // genesis | corpus (empty → inferred)
+  string mode = 6;
+}
+
+message ExtractAdaptResponse {
+  bool ok = 1;
+  string mode = 2;
+  repeated WrittenArtifact written = 3;
+  repeated string skipped = 4;
+  optional string error_code = 5;
+  optional string error_message = 6;
+}
+
+message ProgressUpdate {
+  string request_id = 1;
+  string intention_id = 2;
+  AssemblyStep step = 3;
+  double fraction = 4;
+  string message = 5;
+  google.protobuf.Timestamp at = 6;
+  google.protobuf.Struct attributes = 7;
+}
+
+message AssemblyProgress {
+  oneof event {
+    ProgressUpdate progress = 1;
+    AssemblyResponse completed = 2;
+  }
+}
+
+message TransformRequest {
+  WorkspaceRef workspace = 1;
+  string manifest_relpath = 2;
+  string target_relpath = 3;
+  optional string out_relpath = 4;
+  optional AssemblyManifest manifest_inline = 5;
+}
+
+message TransformationResult {
+  bool ok = 1;
+  string target_relpath = 2;
+  optional string out_relpath = 3;
+  int32 widget_count = 4;
+  optional string error_code = 5;
+  optional string error_message = 6;
+  google.protobuf.Struct cli_payload = 7;
+}
+
+message TransformResponse {
+  TransformationResult result = 1;
+}
+
+message VerificationRequest {
+  WorkspaceRef workspace = 1;
+  string service_name = 2;
+  bool gate_t = 3;
+  bool gate_c = 4;
+  bool gate_s = 5;
+  bool factory = 6;
+  bool ui = 7;
+  bool desktop = 8;
+  bool live = 9;
+  bool evolve_delta = 10;
+  optional string gate_s_judge_json = 11;
+  optional string blueprint_relpath = 12;
+  optional string manifest_relpath = 13;
+  optional string intent = 14;
+}
+
+message Violation {
+  string code = 1;
+  string gate = 2;
+  Severity severity = 3;
+  string message = 4;
+  optional string path = 5;
+  google.protobuf.Struct evidence = 6;
+}
+
+message GateResult {
+  string gate = 1;
+  VerifyStatus status = 2;
+  repeated Violation violations = 3;
+}
+
+message VerificationReport {
+  string service_name = 1;
+  VerifyStatus status = 2;
+  repeated GateResult gates = 3;
+  repeated Violation violations = 4;
+  optional string report_relpath = 5;
+  google.protobuf.Timestamp at = 6;
+}
+
+service AssemblerService {
+  rpc AssembleService(DesignRequest) returns (AssemblyResponse);
+  rpc StreamAssembly(DesignRequest) returns (stream AssemblyProgress);
+  rpc TransformAtom(TransformRequest) returns (TransformResponse);
+  // Phase 6: pull inventory (+ optional bytes) without re-assemble.
+  rpc FetchArtifacts(FetchArtifactsRequest) returns (FetchArtifactsResponse);
+  // Optional Mechanics EXTRACT step (EliteEW / reference corpus → Empery paths).
+  rpc ExtractAdapt(ExtractAdaptRequest) returns (ExtractAdaptResponse);
+}
+
+service VerifierService {
+  rpc VerifyService(VerificationRequest) returns (VerificationReport);
+}

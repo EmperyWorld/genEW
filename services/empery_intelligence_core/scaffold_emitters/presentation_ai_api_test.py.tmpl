@@ -1,0 +1,113 @@
+"""{service_name} health + presentations with mocked Nervas client."""
+
+from __future__ import annotations
+
+from typing import Any
+
+import pytest
+from fastapi.testclient import TestClient
+
+from services.{service_name}.config import ServiceConfig, clear_config_cache
+from services.{service_name}.src.api.main import create_app
+from services.{service_name}.src.integration.nervas_client import NervasClient
+
+
+class _FakeNervas(NervasClient):
+    def __init__(self) -> None:
+        super().__init__("http://eic.test")
+
+    async def health(self) -> dict[str, Any]:
+        return {{"nervas": {{"ready": True, "detail": "HTTP 200", "backend": "local_llama"}}}}
+
+    async def chat(
+        self,
+        *,
+        messages: list[dict[str, str]],
+        temperature: float = 0.35,
+        max_tokens: int = 4096,
+    ) -> dict[str, Any]:
+        assert messages
+        system = " ".join(
+            str(m.get("content") or "") for m in messages if m.get("role") == "system"
+        )
+        if "style advisor" in system.lower() or "style" in system.lower():
+            return {{
+                "backend": "local_llama",
+                "model": "test-model",
+                "message": {{
+                    "role": "assistant",
+                    "content": "Use a clean navy palette with bold titles.",
+                }},
+            }}
+        return {{
+            "backend": "local_llama",
+            "model": "test-model",
+            "message": {{
+                "role": "assistant",
+                "content": (
+                    '{{"slides":['
+                    '{{"title":"Intro","bullets":["Welcome","Agenda"]}},'
+                    '{{"title":"Body","bullets":["Point A","Point B"]}},'
+                    '{{"title":"Close","bullets":["Thanks","Q&A"]}}'
+                    "]}}"
+                ),
+            }},
+        }}
+
+
+@pytest.fixture
+def client(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("EVENT_BUS_ALLOW_IN_MEMORY", "true")
+    clear_config_cache()
+    cfg = ServiceConfig(
+        eic_api_base="http://eic.test",
+        cors_origins=["http://127.0.0.1:5174"],
+    )
+    app = create_app(config=cfg)
+    fake = _FakeNervas()
+    app.state.container.register("nervas_client", lambda _c: fake)
+    with TestClient(app) as c:
+        yield c
+    clear_config_cache()
+
+
+def test_health_create_history_style(client: TestClient) -> None:
+    h = client.get("/api/v1/health")
+    assert h.status_code == 200
+    body = h.json()
+    assert body["service"] == "{service_name}"
+    assert body["nervas"]["ready"] is True
+
+    g = client.post(
+        "/api/v1/presentations",
+        json={{
+            "title": "Q3 Plan",
+            "topic": "product roadmap",
+            "style_brief": "minimal navy",
+            "num_slides": 3,
+            "language": "en",
+        }},
+    )
+    assert g.status_code == 200, g.text
+    detail = g.json()
+    assert detail["status"] == "ready"
+    assert len(detail["slides"]) >= 3
+    pid = detail["id"]
+
+    hist = client.get("/api/v1/presentations")
+    assert hist.status_code == 200
+    assert any(item["id"] == pid for item in hist.json())
+
+    one = client.get(f"/api/v1/presentations/{{pid}}")
+    assert one.status_code == 200
+    assert one.json()["slides"][0]["title"] == "Intro"
+
+    chat = client.post(
+        "/api/v1/style/chat",
+        json={{
+            "presentation_id": pid,
+            "messages": [{{"role": "user", "content": "Make it more bold"}}],
+        }},
+    )
+    assert chat.status_code == 200
+    assert "navy" in chat.json()["message"]["content"].lower()

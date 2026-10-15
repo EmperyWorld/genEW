@@ -1,0 +1,22 @@
+{
+  "name": "empery_deploy_agent",
+  "version": "0.1.0",
+  "features": [
+    "health",
+    "compose_allowlist",
+    "rootless_podman_remote"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [],
+  "publishes": [],
+  "subscribes": [],
+  "ui": {
+    "required": false,
+    "skip_reason": "Deploy agent API \u2014 ops via ECC/deploy tooling; no product feature page.",
+    "feature_key": "empery_deploy_agent",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

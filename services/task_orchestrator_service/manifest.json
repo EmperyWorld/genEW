@@ -1,0 +1,29 @@
+{
+  "name": "task_orchestrator_service",
+  "version": "0.1.0",
+  "features": [
+    "postgres",
+    "kanban_tasks",
+    "identity_gated_writes",
+    "task_lifecycle_events"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [
+    "identity_service"
+  ],
+  "publishes": [
+    "task.created",
+    "task.updated",
+    "task.assigned"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": false,
+    "skip_reason": "Trinity orchestrator peer \u2014 no ECC product feature; health/registry is the readiness surface.",
+    "feature_key": "task_orchestrator_service",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

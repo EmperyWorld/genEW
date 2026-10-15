@@ -1,0 +1,49 @@
+# syntax=docker/dockerfile:1
+# Empery Deploy Agent — rootless Podman remote client (uid 1000).
+# Talks to the host user podman.sock; never privileged, never label=disable.
+# Build: podman build --format docker -f deploy/docker/Dockerfile.deploy_agent -t empery/deploy_agent .
+
+FROM docker.io/library/python:3.12-slim-bookworm AS deps
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.runtime.txt /tmp/requirements.runtime.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r /tmp/requirements.runtime.txt \
+    && pip install --no-cache-dir 'podman-compose>=1.2.0'
+
+FROM docker.io/library/python:3.12-slim-bookworm AS runtime
+
+ARG SERVICE_PORT=8010
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PORT=${SERVICE_PORT} \
+    LOG_LEVEL=INFO \
+    CONTAINER_HOST=unix:///run/podman/podman.sock \
+    DOCKER_HOST=unix:///run/podman/podman.sock
+
+RUN groupadd --gid 1000 empery \
+    && useradd --uid 1000 --gid empery --create-home --shell /usr/sbin/nologin empery \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends podman curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /app /run/podman \
+    && chown -R empery:empery /app
+
+COPY --from=deps /opt/venv /opt/venv
+
+WORKDIR /app
+COPY --chown=empery:empery core /app/core
+COPY --chown=empery:empery services/empery_deploy_agent /app/services/empery_deploy_agent
+
+USER 1000:1000
+EXPOSE ${SERVICE_PORT}
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:'+__import__('os').environ.get('PORT','8010')+'/api/v1/health', timeout=3)" || exit 1
+
+CMD ["sh", "-c", "exec uvicorn services.empery_deploy_agent.src.api.main:create_app --factory --host 0.0.0.0 --port ${PORT}"]

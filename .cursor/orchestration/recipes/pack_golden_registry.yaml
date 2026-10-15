@@ -1,0 +1,54 @@
+# P18 law: product pack without a PASSED golden report is not assembly-active.
+# Cross-cutting laws + platform/peer adapters stay always_active.
+# Reports live under .cursor/orchestration/reports/ (repo-relative).
+
+version: 1
+
+always_active:
+  # Cross-cutting laws
+  - service_anatomy
+  - desktop_mount_catalog
+  - verify_gates
+  - service_factory
+  # Platform / shell (not newborn product genesis)
+  - desktop_shell_kernel
+  - window_snap
+  # Peer adapters (proven via parent product goldens)
+  - nervas_llm_peer
+  - comfy_image_peer
+  # EWGen extract / Component Factory (vendored into EIC)
+  - ewgen_factory
+
+# Product packs → at least one report must exist and contain PASSED.
+product_goldens:
+  ewa_companion:
+    - p4_golden_loop_smoke.md
+    - p7_strict_golden_loop.md
+    - p17_evolve_matrix.md
+  notes_tool:
+    - p8_notes_golden_smoke.md
+  notes_crud:
+    - p8_notes_golden_smoke.md
+  doc_editor:
+    - p16_desktop_launch.md
+    - p8_notes_golden_smoke.md
+  task_board:
+    - p12_task_board_golden_smoke.md
+    - p17_evolve_matrix.md
+  ops_dashboard:
+    - p12_ops_dashboard_golden_smoke.md
+    - p17_evolve_matrix.md
+  research_report:
+    - p12_research_report_golden_smoke.md
+  site_studio:
+    - p12_site_studio_golden_smoke.md
+  ewrp:
+    - p12_ewrp_corpus_landing.md
+  studios:
+    - p12_image_studio_golden_smoke.md
+  image_studio:
+    - p12_image_studio_golden_smoke.md
+  video_studio:
+    - p12_video_studio_golden_smoke.md
+  music_forge:
+    - p12_music_forge_golden_smoke.md

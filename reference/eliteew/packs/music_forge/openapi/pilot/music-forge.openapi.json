@@ -1,0 +1,3359 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EliteEW pilot (/api/v1/music-forge)",
+    "version": "2.0.0-unified",
+    "description": "Sliced from eliteew-openapi-export.json — regenerate with openapi-extract-pilots.mjs"
+  },
+  "paths": {
+    "/api/v1/music-forge/capabilities": {
+      "get": {
+        "tags": [
+          "MusicForge - backend-first ACE 1.5 MVP",
+          "MusicForge"
+        ],
+        "summary": "Music Forge Capabilities",
+        "description": "Вернуть capabilities активной DB-конфигурации (без silent code fallback).",
+        "operationId": "music_forge_capabilities_api_v1_music_forge_capabilities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeCapabilitiesOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/runs": {
+      "post": {
+        "tags": [
+          "MusicForge - backend-first ACE 1.5 MVP",
+          "MusicForge"
+        ],
+        "summary": "Create Music Forge Run",
+        "description": "Create durable MusicForge run state and enqueue backend execution.",
+        "operationId": "create_music_forge_run_api_v1_music_forge_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeRunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeRunCreateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "MusicForge - backend-first ACE 1.5 MVP",
+          "MusicForge"
+        ],
+        "summary": "Get Music Forge Run",
+        "description": "Return current run state and ordered backend steps.",
+        "operationId": "get_music_forge_run_api_v1_music_forge_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeRunOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/runs/{run_id}/events": {
+      "get": {
+        "tags": [
+          "MusicForge - backend-first ACE 1.5 MVP",
+          "MusicForge"
+        ],
+        "summary": "Stream Music Forge Run Events",
+        "description": "Stream run snapshots for the animated thin frontend workflow.",
+        "operationId": "stream_music_forge_run_events_api_v1_music_forge_runs__run_id__events_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/runs/{run_id}/cancel": {
+      "post": {
+        "tags": [
+          "MusicForge - backend-first ACE 1.5 MVP",
+          "MusicForge"
+        ],
+        "summary": "Cancel Music Forge Run",
+        "description": "Cancel a non-terminal MusicForge run and best-effort cancel its UGS request.",
+        "operationId": "cancel_music_forge_run_api_v1_music_forge_runs__run_id__cancel_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeRunOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/runs/{run_id}/feedback": {
+      "post": {
+        "tags": [
+          "MusicForge - backend-first ACE 1.5 MVP",
+          "MusicForge"
+        ],
+        "summary": "Record Music Forge Feedback",
+        "description": "Record like/dislike feedback for the generated MusicForge result.",
+        "operationId": "record_music_forge_feedback_api_v1_music_forge_runs__run_id__feedback_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeFeedbackIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeFeedbackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/stats/overview": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Stats Overview",
+        "description": "Aggregate run status counts, failure stages, and feedback in a time window.",
+        "operationId": "music_forge_admin_stats_overview_api_v1_music_forge_admin_stats_overview_get",
+        "parameters": [
+          {
+            "name": "window_hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 168,
+              "minimum": 1,
+              "default": 24,
+              "title": "Window Hours"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminOverviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/runs": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin List Runs",
+        "description": "List MusicForge runs across all users (admin operator view).",
+        "operationId": "music_forge_admin_list_runs_api_v1_music_forge_admin_runs_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminRunListOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Get Run",
+        "description": "Return full run state and steps for any user.",
+        "operationId": "music_forge_admin_get_run_api_v1_music_forge_admin_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminRunDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/feedback/stats": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Feedback Stats",
+        "description": "Return global like/dislike histogram and top dislike reason codes.",
+        "operationId": "music_forge_admin_feedback_stats_api_v1_music_forge_admin_feedback_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminFeedbackStatsOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/probe/comfy": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Probe Comfy",
+        "description": "Probe ComfyUI provider health using the same path as UGS execution.",
+        "operationId": "music_forge_admin_probe_comfy_api_v1_music_forge_admin_probe_comfy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminComfyProbeOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin List Config Revisions",
+        "description": "Список ревизий конфигурации (строго envelope `{ items, total }`).",
+        "operationId": "music_forge_admin_list_config_revisions_api_v1_music_forge_admin_config_revisions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminConfigRevisionListOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/draft": {
+      "post": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Create Config Draft",
+        "description": "Create draft revision by copying the active bundle (does not activate).",
+        "operationId": "music_forge_admin_create_config_draft_api_v1_music_forge_admin_config_revisions_draft_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminConfigDraftCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminConfigRevisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Get Config Revision",
+        "description": "Return full config bundle for one revision.",
+        "operationId": "music_forge_admin_get_config_revision_api_v1_music_forge_admin_config_revisions__revision_id__get",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminConfigRevisionDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/diff": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Diff Config Revision",
+        "description": "Diff target revision against the active revision.",
+        "operationId": "music_forge_admin_diff_config_revision_api_v1_music_forge_admin_config_revisions__revision_id__diff_get",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminConfigDiffOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/product": {
+      "patch": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Patch Config Product",
+        "description": "Patch product_settings on a draft revision.",
+        "operationId": "music_forge_admin_patch_config_product_api_v1_music_forge_admin_config_revisions__revision_id__product_patch",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminProductPatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Patch Config Product Api V1 Music Forge Admin Config Revisions  Revision Id  Product Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/lanes/{lane_key}": {
+      "patch": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Patch Config Lane",
+        "description": "Patch one lane (ugs_workflow/sampler/…) on a draft revision.",
+        "operationId": "music_forge_admin_patch_config_lane_api_v1_music_forge_admin_config_revisions__revision_id__lanes__lane_key__patch",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "lane_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lane Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminLanePatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Patch Config Lane Api V1 Music Forge Admin Config Revisions  Revision Id  Lanes  Lane Key  Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/prompts/{kind}": {
+      "patch": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Patch Config Prompt",
+        "description": "Patch one prompt template on a draft revision.",
+        "operationId": "music_forge_admin_patch_config_prompt_api_v1_music_forge_admin_config_revisions__revision_id__prompts__kind__patch",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Kind"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminPromptPatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Patch Config Prompt Api V1 Music Forge Admin Config Revisions  Revision Id  Prompts  Kind  Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/styles/{style_key}": {
+      "patch": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Patch Config Style",
+        "description": "Patch one style profile on a draft revision.",
+        "operationId": "music_forge_admin_patch_config_style_api_v1_music_forge_admin_config_revisions__revision_id__styles__style_key__patch",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "style_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Style Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminStylePatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Patch Config Style Api V1 Music Forge Admin Config Revisions  Revision Id  Styles  Style Key  Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/stage-types": {
+      "get": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin List Stage Types",
+        "description": "Closed stage-type catalog for Pipeline Builder (Wave C).",
+        "operationId": "music_forge_admin_list_stage_types_api_v1_music_forge_admin_config_stage_types_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminStageTypesOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/modes/{mode_key}": {
+      "patch": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Patch Config Mode",
+        "description": "Patch one Mode on a draft revision.",
+        "operationId": "music_forge_admin_patch_config_mode_api_v1_music_forge_admin_config_revisions__revision_id__modes__mode_key__patch",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "mode_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminModePatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Patch Config Mode Api V1 Music Forge Admin Config Revisions  Revision Id  Modes  Mode Key  Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/modes/{mode_key}/stages/{stage_key}": {
+      "patch": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Patch Config Stage",
+        "description": "Patch one pipeline stage instance on a draft Mode.",
+        "operationId": "music_forge_admin_patch_config_stage_api_v1_music_forge_admin_config_revisions__revision_id__modes__mode_key__stages__stage_key__patch",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "mode_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode Key"
+            }
+          },
+          {
+            "name": "stage_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stage Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminStagePatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Patch Config Stage Api V1 Music Forge Admin Config Revisions  Revision Id  Modes  Mode Key  Stages  Stage Key  Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Delete Config Stage",
+        "description": "Delete a stage instance (blocked if last enabled audio_comfy).",
+        "operationId": "music_forge_admin_delete_config_stage_api_v1_music_forge_admin_config_revisions__revision_id__modes__mode_key__stages__stage_key__delete",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "mode_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode Key"
+            }
+          },
+          {
+            "name": "stage_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stage Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Delete Config Stage Api V1 Music Forge Admin Config Revisions  Revision Id  Modes  Mode Key  Stages  Stage Key  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/modes/{mode_key}/stages": {
+      "post": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Create Config Stage",
+        "description": "Add a stage instance from the closed stage-type registry.",
+        "operationId": "music_forge_admin_create_config_stage_api_v1_music_forge_admin_config_revisions__revision_id__modes__mode_key__stages_post",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          },
+          {
+            "name": "mode_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminStageCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Music Forge Admin Create Config Stage Api V1 Music Forge Admin Config Revisions  Revision Id  Modes  Mode Key  Stages Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/preview-audio-payload": {
+      "post": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Preview Audio Payload",
+        "description": "Dry-run UGS→Comfy input_data for a revision (no enqueue).",
+        "operationId": "music_forge_admin_preview_audio_payload_api_v1_music_forge_admin_config_revisions__revision_id__preview_audio_payload_post",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicForgeAdminPreviewAudioIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminPreviewAudioOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music-forge/admin/config/revisions/{revision_id}/activate": {
+      "post": {
+        "tags": [
+          "MusicForge Admin - operator stats and config",
+          "MusicForge Admin"
+        ],
+        "summary": "Music Forge Admin Activate Config Revision",
+        "description": "Активировать ревизию после hard-gate валидации bundle.",
+        "operationId": "music_forge_admin_activate_config_revision_api_v1_music_forge_admin_config_revisions__revision_id__activate_post",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicForgeAdminConfigActivateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MusicForgeCapabilitiesOut": {
+        "properties": {
+          "default_language": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "ru",
+              "en"
+            ],
+            "title": "Default Language",
+            "default": "auto"
+          },
+          "languages": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Languages"
+          },
+          "duration_seconds_default": {
+            "type": "integer",
+            "title": "Duration Seconds Default",
+            "default": 180
+          },
+          "duration_seconds_min": {
+            "type": "integer",
+            "title": "Duration Seconds Min",
+            "default": 60
+          },
+          "duration_seconds_max": {
+            "type": "integer",
+            "title": "Duration Seconds Max",
+            "default": 240
+          },
+          "mvp_lane": {
+            "type": "string",
+            "title": "Mvp Lane",
+            "default": "SFT XL (default) | BASE XL | TURBO XL"
+          },
+          "frontend_role": {
+            "type": "string",
+            "const": "thin_client",
+            "title": "Frontend Role",
+            "default": "thin_client"
+          },
+          "config_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Version"
+          },
+          "modes": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeModeCapability"
+            },
+            "type": "array",
+            "title": "Modes"
+          },
+          "default_mode_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Mode Key"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeCapabilitiesOut"
+      },
+      "MusicForgeRunCreate": {
+        "properties": {
+          "idea": {
+            "type": "string",
+            "maxLength": 280,
+            "minLength": 3,
+            "title": "Idea"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "ru",
+              "en"
+            ],
+            "title": "Language",
+            "default": "auto"
+          },
+          "style_hint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 220
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style Hint"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraints"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "maximum": 240,
+            "minimum": 60,
+            "title": "Duration Seconds",
+            "default": 180
+          },
+          "mode_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode Key"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 220
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "idea"
+        ],
+        "title": "MusicForgeRunCreate",
+        "description": "Create one quality-first MusicForge MVP run."
+      },
+      "MusicForgeRunCreateOut": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "status"
+        ],
+        "title": "MusicForgeRunCreateOut"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MusicForgeRunOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "idea": {
+            "type": "string",
+            "title": "Idea"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "en"
+            ],
+            "title": "Language"
+          },
+          "style_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style Hint"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraints"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "title": "Duration Seconds"
+          },
+          "progress_current": {
+            "type": "integer",
+            "title": "Progress Current"
+          },
+          "progress_total": {
+            "type": "integer",
+            "title": "Progress Total"
+          },
+          "normalized_input": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Normalized Input"
+          },
+          "song_blueprint": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Song Blueprint"
+          },
+          "lyrics_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lyrics Payload"
+          },
+          "style_capsule": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Style Capsule"
+          },
+          "render_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Render Payload"
+          },
+          "result_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Result Payload"
+          },
+          "error_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Error Payload"
+          },
+          "content_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Id"
+          },
+          "ugs_request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ugs Request Id"
+          },
+          "config_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Revision Id"
+          },
+          "config_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Version"
+          },
+          "config_generation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Generation"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "cancelled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeStepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "idea",
+          "language",
+          "duration_seconds",
+          "progress_current",
+          "progress_total",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "MusicForgeRunOut"
+      },
+      "MusicForgeFeedbackIn": {
+        "properties": {
+          "rating": {
+            "type": "string",
+            "enum": [
+              "like",
+              "dislike"
+            ],
+            "title": "Rating"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code"
+          },
+          "reason_custom": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Custom"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rating"
+        ],
+        "title": "MusicForgeFeedbackIn"
+      },
+      "MusicForgeFeedbackOut": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "default": true
+          },
+          "rating": {
+            "type": "string",
+            "enum": [
+              "like",
+              "dislike"
+            ],
+            "title": "Rating"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rating"
+        ],
+        "title": "MusicForgeFeedbackOut"
+      },
+      "MusicForgeAdminOverviewOut": {
+        "properties": {
+          "window_hours": {
+            "type": "integer",
+            "title": "Window Hours"
+          },
+          "counts_by_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts By Status"
+          },
+          "fail_by_stage": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeAdminFailStageCount"
+            },
+            "type": "array",
+            "title": "Fail By Stage"
+          },
+          "feedback_like": {
+            "type": "integer",
+            "title": "Feedback Like",
+            "default": 0
+          },
+          "feedback_dislike": {
+            "type": "integer",
+            "title": "Feedback Dislike",
+            "default": 0
+          },
+          "in_process_counters": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "In Process Counters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "window_hours"
+        ],
+        "title": "MusicForgeAdminOverviewOut"
+      },
+      "MusicForgeAdminRunListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeAdminRunListItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "MusicForgeAdminRunListOut"
+      },
+      "MusicForgeAdminRunDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "idea": {
+            "type": "string",
+            "title": "Idea"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "en"
+            ],
+            "title": "Language"
+          },
+          "style_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style Hint"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraints"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "title": "Duration Seconds"
+          },
+          "progress_current": {
+            "type": "integer",
+            "title": "Progress Current"
+          },
+          "progress_total": {
+            "type": "integer",
+            "title": "Progress Total"
+          },
+          "normalized_input": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Normalized Input"
+          },
+          "song_blueprint": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Song Blueprint"
+          },
+          "lyrics_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lyrics Payload"
+          },
+          "style_capsule": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Style Capsule"
+          },
+          "render_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Render Payload"
+          },
+          "result_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Result Payload"
+          },
+          "error_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Error Payload"
+          },
+          "content_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Id"
+          },
+          "ugs_request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ugs Request Id"
+          },
+          "config_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Revision Id"
+          },
+          "config_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Version"
+          },
+          "config_generation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Generation"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "cancelled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeStepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "idea",
+          "language",
+          "duration_seconds",
+          "progress_current",
+          "progress_total",
+          "created_at",
+          "updated_at",
+          "user_id"
+        ],
+        "title": "MusicForgeAdminRunDetailOut"
+      },
+      "MusicForgeAdminFeedbackStatsOut": {
+        "properties": {
+          "rating_histogram": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Rating Histogram"
+          },
+          "top_reason_codes": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeAdminFeedbackReasonCount"
+            },
+            "type": "array",
+            "title": "Top Reason Codes"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminFeedbackStatsOut"
+      },
+      "MusicForgeAdminComfyProbeOut": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfyui"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "response_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Time"
+          },
+          "last_checked": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Code"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "MusicForgeAdminComfyProbeOut"
+      },
+      "MusicForgeAdminConfigRevisionListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeAdminConfigRevisionOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total"
+        ],
+        "title": "MusicForgeAdminConfigRevisionListOut",
+        "description": "Envelope-only list contract for admin config revisions (P0 reconstruction)."
+      },
+      "MusicForgeAdminConfigDraftCreate": {
+        "properties": {
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminConfigDraftCreate"
+      },
+      "MusicForgeAdminConfigRevisionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "activated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "MusicForgeAdminConfigRevisionOut"
+      },
+      "MusicForgeAdminConfigRevisionDetailOut": {
+        "properties": {
+          "revision": {
+            "$ref": "#/components/schemas/MusicForgeAdminConfigRevisionOut"
+          },
+          "lanes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lanes"
+          },
+          "styles": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Styles"
+          },
+          "prompts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Prompts"
+          },
+          "product": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Product"
+          },
+          "modes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Modes"
+          },
+          "pipelines": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pipelines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revision"
+        ],
+        "title": "MusicForgeAdminConfigRevisionDetailOut"
+      },
+      "MusicForgeAdminConfigDiffOut": {
+        "properties": {
+          "base_version": {
+            "type": "string",
+            "title": "Base Version"
+          },
+          "target_version": {
+            "type": "string",
+            "title": "Target Version"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/MusicForgeAdminConfigDiffChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_version",
+          "target_version"
+        ],
+        "title": "MusicForgeAdminConfigDiffOut"
+      },
+      "MusicForgeAdminProductPatchIn": {
+        "properties": {
+          "duration_min": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Min"
+          },
+          "duration_max": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Max"
+          },
+          "duration_default": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Default"
+          },
+          "mvp_lane_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mvp Lane Label"
+          },
+          "max_completed_runs_per_day": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Completed Runs Per Day"
+          },
+          "max_completed_runs_per_month": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Completed Runs Per Month"
+          },
+          "audio_type_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Type Key"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminProductPatchIn"
+      },
+      "MusicForgeAdminLanePatchIn": {
+        "properties": {
+          "ugs_workflow": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ugs Workflow"
+          },
+          "ace_workflow": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ace Workflow"
+          },
+          "model_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Scope"
+          },
+          "workflow_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workflow File"
+          },
+          "billing_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Billing Mode"
+          },
+          "ksampler_use_comfy_template": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ksampler Use Comfy Template"
+          },
+          "markers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Markers"
+          },
+          "sampler": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sampler"
+          },
+          "is_default": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Default"
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminLanePatchIn"
+      },
+      "MusicForgeAdminPromptPatchIn": {
+        "properties": {
+          "system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Prompt"
+          },
+          "rules": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules"
+          },
+          "extras": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extras"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminPromptPatchIn"
+      },
+      "MusicForgeAdminStylePatchIn": {
+        "properties": {
+          "keyscale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyscale"
+          },
+          "default_vocal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Vocal"
+          },
+          "bpm_default": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bpm Default"
+          },
+          "textures": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textures"
+          },
+          "arrangement": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrangement"
+          },
+          "voice": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voice"
+          },
+          "soloist_policy": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Soloist Policy"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminStylePatchIn"
+      },
+      "MusicForgeAdminStageTypesOut": {
+        "properties": {
+          "stage_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stage Types"
+          },
+          "llm_ugs_type_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Llm Ugs Type Keys"
+          },
+          "defaults": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Defaults"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminStageTypesOut"
+      },
+      "MusicForgeAdminModePatchIn": {
+        "properties": {
+          "label_ru": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Ru"
+          },
+          "label_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label En"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "is_default": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Default"
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Order"
+          },
+          "style_hint_default": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style Hint Default"
+          },
+          "lane_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lane Key"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminModePatchIn"
+      },
+      "MusicForgeAdminStagePatchIn": {
+        "properties": {
+          "title_ru": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title Ru"
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Order"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminStagePatchIn"
+      },
+      "MusicForgeAdminStageCreateIn": {
+        "properties": {
+          "stage_key": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Stage Key"
+          },
+          "stage_type": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Stage Type"
+          },
+          "title_ru": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title Ru"
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Order"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage_key",
+          "stage_type"
+        ],
+        "title": "MusicForgeAdminStageCreateIn"
+      },
+      "MusicForgeAdminPreviewAudioIn": {
+        "properties": {
+          "idea": {
+            "type": "string",
+            "maxLength": 280,
+            "minLength": 3,
+            "title": "Idea",
+            "default": "Admin preview song idea"
+          },
+          "style_hint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 220
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style Hint"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraints"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "auto"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "maximum": 240,
+            "minimum": 60,
+            "title": "Duration Seconds",
+            "default": 180
+          }
+        },
+        "type": "object",
+        "title": "MusicForgeAdminPreviewAudioIn"
+      },
+      "MusicForgeAdminPreviewAudioOut": {
+        "properties": {
+          "revision_id": {
+            "type": "string",
+            "title": "Revision Id"
+          },
+          "revision_version": {
+            "type": "string",
+            "title": "Revision Version"
+          },
+          "revision_status": {
+            "type": "string",
+            "title": "Revision Status"
+          },
+          "lane_key": {
+            "type": "string",
+            "title": "Lane Key"
+          },
+          "ugs_workflow": {
+            "type": "string",
+            "title": "Ugs Workflow"
+          },
+          "resolved_builder": {
+            "type": "string",
+            "title": "Resolved Builder"
+          },
+          "input_data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revision_id",
+          "revision_version",
+          "revision_status",
+          "lane_key",
+          "ugs_workflow",
+          "resolved_builder"
+        ],
+        "title": "MusicForgeAdminPreviewAudioOut"
+      },
+      "MusicForgeAdminConfigActivateOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "activated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "config_generation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Generation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "status"
+        ],
+        "title": "MusicForgeAdminConfigActivateOut"
+      },
+      "MusicForgeModeCapability": {
+        "properties": {
+          "mode_key": {
+            "type": "string",
+            "title": "Mode Key"
+          },
+          "label_ru": {
+            "type": "string",
+            "title": "Label Ru"
+          },
+          "label_en": {
+            "type": "string",
+            "title": "Label En"
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Is Default",
+            "default": false
+          },
+          "lane_key": {
+            "type": "string",
+            "title": "Lane Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode_key",
+          "label_ru",
+          "label_en",
+          "lane_key"
+        ],
+        "title": "MusicForgeModeCapability",
+        "description": "Public Mode option for the thin client picker (Wave D)."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "MusicForgeStepOut": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "step_index": {
+            "type": "integer",
+            "title": "Step Index"
+          },
+          "step_kind": {
+            "type": "string",
+            "title": "Step Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "completed",
+              "failed",
+              "cancelled",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "input_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input Payload"
+          },
+          "output_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Output Payload"
+          },
+          "error_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Error Payload"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step_index",
+          "step_kind",
+          "title",
+          "status"
+        ],
+        "title": "MusicForgeStepOut"
+      },
+      "MusicForgeAdminFailStageCount": {
+        "properties": {
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage",
+          "count"
+        ],
+        "title": "MusicForgeAdminFailStageCount"
+      },
+      "MusicForgeAdminRunListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "idea": {
+            "type": "string",
+            "title": "Idea"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "title": "Duration Seconds"
+          },
+          "model_lane": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Lane"
+          },
+          "mode_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode Key"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "status",
+          "idea",
+          "duration_seconds",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "MusicForgeAdminRunListItem"
+      },
+      "MusicForgeAdminFeedbackReasonCount": {
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "title": "Reason Code"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason_code",
+          "count"
+        ],
+        "title": "MusicForgeAdminFeedbackReasonCount"
+      },
+      "MusicForgeAdminConfigDiffChange": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "before": {
+            "title": "Before"
+          },
+          "after": {
+            "title": "After"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "title": "MusicForgeAdminConfigDiffChange"
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "recommendations": [
+    "detachhead.basedpyright",
+    "ms-python.python",
+    "ms-python.debugpy",
+    "charliermarsh.ruff",
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "redhat.vscode-yaml",
+    "ms-azuretools.vscode-containers",
+    "usernamehw.errorlens",
+    "pkief.material-icon-theme",
+    "timonwong.shellcheck",
+    "vitest.explorer",
+    "eamodio.gitlens",
+    "EditorConfig.EditorConfig",
+    "tamasfe.even-better-toml",
+    "mikestead.dotenv",
+    "streetsidesoftware.code-spell-checker",
+    "streetsidesoftware.code-spell-checker-russian",
+    "DavidAnson.vscode-markdownlint",
+    "bierner.markdown-mermaid",
+    "ms-playwright.playwright",
+    "humao.rest-client",
+    "Gruntfuggly.todo-tree",
+    "foxundermoon.shell-format"
+  ],
+  "unwantedRecommendations": [
+    "anysphere.cursorpyright",
+    "ms-python.vscode-pylance",
+    "ms-python.isort",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "GitHub.vscode-pull-request-github",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "github.remotehub",
+    "ms-vscode.remote-repositories",
+    "ms-vsliveshare.vsliveshare"
+  ]
+}

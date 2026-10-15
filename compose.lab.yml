@@ -1,0 +1,16 @@
+# Lab/demo stand overlay — enable after ops review.
+# Usage:
+#   ./scripts/ew2_one_click_deploy.sh --lab
+#   podman-compose -f compose.yml -f compose.lab.yml up -d
+#
+# Market compose defaults: autonomy OFF, password-reset reveal OFF, mesh token optional.
+# This overlay turns on zero-touch genesis + admin-mediated reset tokens for local stands.
+services:
+  empery_intelligence_core:
+    environment:
+      EIC_AUTONOMOUS_ENABLED: "true"
+  identity_service:
+    environment:
+      # Lab-only: include reset_token in API response (no SMTP on this seed).
+      IDENTITY_PASSWORD_RESET_REVEAL: "true"
+      EMPERY_ENV: ${EMPERY_ENV:-development}

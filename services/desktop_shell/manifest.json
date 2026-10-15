@@ -1,0 +1,26 @@
+{
+  "name": "desktop_shell",
+  "version": "0.1.0",
+  "features": [
+    "shell_bootstrap",
+    "desktop_items",
+    "installed_apps",
+    "postgres"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [],
+  "publishes": [
+    "desktop.shell.bootstrapped",
+    "desktop.items.changed"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": false,
+    "skip_reason": "Launch-plane shell \u2014 Desktop is the product UI; ECC peer page not required.",
+    "feature_key": "desktop_shell",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

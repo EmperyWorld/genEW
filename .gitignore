@@ -1,0 +1,73 @@
+.cursor/orchestration/audit/
+.cursor/orchestration/intents/
+.cursor/orchestration/jobs/pending/
+.cursor/orchestration/jobs/pending_deploy/
+.cursor/orchestration/jobs/deploy_audit/
+.cursor/orchestration/jobs/claimed/
+.cursor/orchestration/jobs/archive/
+.cursor/orchestration/designs/_deleted/
+# Hands/EIC local runtime + extract dumps (never product)
+.cursor/orchestration/eic/
+apps/empery_desktop/atoms/
+compose.reflex.yml
+**/.build_stamp
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+node_modules/
+.DS_Store
+.pytest_cache/
+.data/
+apps/**/dist/
+apps/**/test-results/
+# Local discard bin for debug/smoke debris (not product)
+trash/
+
+# Hands lab throwaways — seed designs/reports/overlays stay tracked
+# (ai_chat, dedmoroz, studios, identity, platform blueprints, program audits)
+.cursor/orchestration/designs/p[0-9]*_*
+.cursor/orchestration/designs/unnamed_service_*
+.cursor/orchestration/designs/recipe_probe_*
+.cursor/orchestration/designs/maket_service_*
+.cursor/orchestration/designs/marketing_cabinet_*
+.cursor/orchestration/designs/marketing_engine_*
+.cursor/orchestration/designs/demo_probe_*
+.cursor/orchestration/designs/karaoke_*
+.cursor/orchestration/reports/p[0-9]*_*_verify.md
+.cursor/orchestration/reports/unnamed_service_verify.md
+.cursor/orchestration/reports/recipe_probe_svc_verify.md
+.cursor/orchestration/reports/maket_service_ai_verify.md
+.cursor/orchestration/reports/marketing_cabinet_verify.md
+.cursor/orchestration/reports/demo_probe_svc_verify.md
+deploy/services/p[0-9]*_*.yml
+deploy/services/unnamed_service.yml
+deploy/services/recipe_probe_svc.yml
+deploy/services/maket_service_ai.yml
+deploy/services/marketing_cabinet.yml
+deploy/services/demo_probe_svc.yml
+deploy/postgres/dynamic/p[0-9]*_*.sql
+deploy/postgres/dynamic/unnamed_service.sql
+deploy/postgres/dynamic/recipe_probe_svc.sql
+deploy/postgres/dynamic/maket_service_ai.sql
+deploy/postgres/dynamic/marketing_cabinet.sql
+deploy/postgres/dynamic/demo_probe_svc.sql
+
+# Assembly C7 / Hands timestamped lab capsules (failed+passed smoke debris)
+.cursor/orchestration/designs/asm_c7_ops_*
+.cursor/orchestration/reports/asm_c7_ops_*_verify.md
+services/asm_c7_ops_*/
+deploy/services/asm_c7_ops_*.yml
+deploy/postgres/dynamic/asm_c7_ops_*.sql
+apps/empery_control_center/src/features/asm-c7-ops-*/
+apps/empery_control_center/src/api/asmC7Ops*Client.ts
+apps/empery_desktop/src/shell/mounts/asm_c7_ops_*.tsx
+services/empery_control_center_api/src/api/routes_asm_c7_ops_*.py
+services/empery_control_center_api/src/core/asm_c7_ops_*_bff_use_cases.py
+services/empery_control_center_api/src/data/asm_c7_ops_*_schemas.py
+services/empery_control_center_api/src/integration/asm_c7_ops_*_client.py
+
+# EWGen factory catalogs (runtime under EIC)
+.cursor/orchestration/ewgen_data/

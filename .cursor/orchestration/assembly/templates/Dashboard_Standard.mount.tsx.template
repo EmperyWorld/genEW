@@ -1,0 +1,23 @@
+/**
+ * Dashboard_Standard template (Desktop) — reference for Assembler slots.
+ * Live emitters: service_scaffold_desktop._ops_dashboard_mount_tsx
+ */
+import { BaseCard, BaseChart, BaseLayout } from "@/assembly_lib";
+
+export function DashboardStandardTemplate(props: {
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <BaseLayout title={props.title} subtitle={props.subtitle}>
+      <div className="grid grid-cols-2 gap-2">
+        {/* @assembler-slot: widgets */}
+        <div data-assembler-slot="widgets" className="contents">
+          <BaseCard title="Placeholder" value="—" />
+          <BaseChart title="Trend" chartType="area_line" series={[]} />
+        </div>
+        {/* @assembler-slot-end: widgets */}
+      </div>
+    </BaseLayout>
+  );
+}

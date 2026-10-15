@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "name": "Empery",
+    "shell": "Desktop shell",
+    "booting": "booting…",
+    "appsCount": "{{count}} apps"
+  },
+  "taskbar": {
+    "aria": "Taskbar",
+    "start": "Start",
+    "startAria": "Start menu",
+    "pinnedAria": "Pinned apps",
+    "clockAria": "Clock"
+  },
+  "startMenu": {
+    "title": "Empery",
+    "subtitle": "Start · launch apps",
+    "searchPlaceholder": "Search apps",
+    "closeAria": "Close start menu",
+    "empty": "Nothing matches",
+    "aria": "Start menu",
+    "deleteApp": "Delete app",
+    "deleteConfirm": "Delete user-created app «{{name}}»? This removes the service capsule.",
+    "deleteDenied": "This app is not deletable (seed or spine).",
+    "deleteFailed": "Delete failed"
+  },
+  "window": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Close",
+    "resize": "Resize window"
+  },
+  "errors": {
+    "bootstrapHint": "Start desktop_shell on :8020 or set VITE_DESKTOP_SHELL_API_BASE."
+  },
+  "lang": {
+    "ru": "RU",
+    "en": "EN",
+    "switchAria": "Interface language"
+  }
+}

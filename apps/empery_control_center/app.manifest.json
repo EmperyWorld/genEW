@@ -1,0 +1,16 @@
+{
+  "name": "empery_control_center",
+  "version": "0.1.0",
+  "features": [
+    "ecosystem_map",
+    "command_console",
+    "service_wizard",
+    "insight_feed",
+    "interactive_sandbox",
+    "websocket_live",
+    "i18n",
+    "design_system_v2"
+  ],
+  "entry_point": "src/main.tsx",
+  "dependencies": []
+}

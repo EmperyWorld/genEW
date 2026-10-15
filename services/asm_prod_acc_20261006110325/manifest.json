@@ -1,0 +1,29 @@
+{
+  "name": "asm_prod_acc_20261006110325",
+  "version": "0.1.0",
+  "features": [
+    "health",
+    "reflex_scaffold",
+    "user_created",
+    "ops_dashboard",
+    "postgres"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [
+    "empery_intelligence_core",
+    "identity_service"
+  ],
+  "publishes": [
+    "metric.metric.created"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": true,
+    "skip_reason": null,
+    "feature_key": "asm_prod_acc_20261006110325",
+    "route": "/ops/asm-prod-acc-20261006110325",
+    "nav_label_key": "nav.asmProdAcc20261006110325",
+    "bff_prefix": "/api/v1/asm-prod-acc-20261006110325",
+    "lab": false
+  }
+}

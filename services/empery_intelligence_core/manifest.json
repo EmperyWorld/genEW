@@ -1,0 +1,58 @@
+{
+  "name": "empery_intelligence_core",
+  "version": "0.1.0",
+  "features": [
+    "nervas_provider",
+    "headless_execution_engine",
+    "local_llama",
+    "openai_adapter",
+    "anthropic_adapter",
+    "autonomous_intention_queue",
+    "headless_agent_loop",
+    "memory_atoms",
+    "autonomous_queue",
+    "autonomous_mode_api",
+    "autonomous_api"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [
+    "empery_deploy_agent",
+    "desktop_shell"
+  ],
+  "publishes": [
+    "eic.intention.submitted",
+    "eic.intention.created",
+    "eic.intention.claimed",
+    "eic.intention.stage_changed",
+    "eic.intention.paused",
+    "eic.intention.resumed",
+    "eic.intention.completed",
+    "eic.intention.failed",
+    "eic.loop.role_started",
+    "eic.loop.role_finished",
+    "eic.assembler.step",
+    "eic.job.queued",
+    "eic.job.started",
+    "eic.job.stage_changed",
+    "eic.job.paused",
+    "eic.job.resumed",
+    "eic.job.completed",
+    "eic.job.failed",
+    "eic.job.cancelled",
+    "eic.mode.changed",
+    "eic.provider.changed",
+    "eic.llm.health"
+  ],
+  "subscribes": [
+    "eic.intention.requested"
+  ],
+  "ui": {
+    "required": false,
+    "skip_reason": "Autonomy/Hands surface is ECC shell (/ops/autonomous); EIC itself has no peer product page.",
+    "feature_key": "empery_intelligence_core",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

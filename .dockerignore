@@ -1,0 +1,27 @@
+.git
+.data
+**/.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+# Keep FakeAI / FakeNervas / demo stubs out of runtime images (tests-only).
+**/tests
+tests
+**/test_*.py
+apps/empery_control_center/node_modules
+apps/empery_control_center/dist
+apps/empery_desktop/node_modules
+apps/empery_desktop/dist
+*.gguf
+.cursor/orchestration/jobs/claimed
+.cursor/orchestration/jobs/pending
+.cursor/orchestration/audit
+agent-transcripts
+**/.env
+.env
+*.egg-info
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov

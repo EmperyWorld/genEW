@@ -1,0 +1,18 @@
+# Empery stack smoke (Rest Client) — host services on localhost when compose is up
+
+@host = http://127.0.0.1
+
+### EIC (empery_intelligence_core) health
+GET {{host}}:8007/api/v1/health
+
+### ECC (empery_control_center_api) health
+GET {{host}}:8006/api/v1/health
+
+### Desktop shell health
+GET {{host}}:8020/api/v1/health
+
+### ai_chat lifecycle-meta via EIC factory
+GET {{host}}:8007/api/v1/factory/services/ai_chat/lifecycle-meta
+
+### ai_chat lifecycle-meta via ECC proxy
+GET {{host}}:8006/api/v1/services/ai_chat/lifecycle-meta

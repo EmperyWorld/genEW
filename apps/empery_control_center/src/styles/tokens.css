@@ -1,0 +1,56 @@
+/**
+ * Signal Obsidian — Empery Control Center visual tokens (source of truth).
+ * Aesthetic bans: purple-indigo gradients, cream+terracotta, broadsheet,
+ * emoji spam, glow-everything, rounded-full pill clusters.
+ */
+:root {
+  /* Field */
+  --ecc-void: #070a0f;
+  --ecc-field: #0c1219;
+  --ecc-panel: #121a24;
+  --ecc-panel-raised: #182231;
+  --ecc-line: #243041;
+  --ecc-line-strong: #334155;
+
+  /* Signal (primary brand accent — teal-phosphor, not purple) */
+  --ecc-signal: #3ddc97;
+  --ecc-signal-dim: #1f8f63;
+  --ecc-signal-soft: rgba(61, 220, 151, 0.12);
+
+  /* Metal (secondary brand — brass, not terracotta) */
+  --ecc-metal: #b08d57;
+  --ecc-metal-dim: #7a623c;
+
+  /* Type */
+  --ecc-ink: #e8eef6;
+  --ecc-ink-muted: #8b9bb0;
+  --ecc-ink-faint: #5a6b80;
+
+  /* Status */
+  --ecc-ok: #3ddc97;
+  --ecc-degraded: #e0a84a;
+  --ecc-down: #e25555;
+  --ecc-unknown: #5a6b80;
+  --ecc-busy: #5bb8e8;
+
+  /* Console */
+  --ecc-console-bg: #05080c;
+  --ecc-console-fg: #b7f5d4;
+  --ecc-console-dim: #4a7a62;
+  --ecc-console-warn: #e0a84a;
+  --ecc-console-err: #ff7a7a;
+
+  /* Motion / focus */
+  --ecc-focus-ring: rgba(61, 220, 151, 0.45);
+  --ecc-radius-sm: 4px;
+  --ecc-radius-md: 8px;
+  --ecc-radius-lg: 12px;
+
+  /* Spacing scale (Wave 1 rhythm) */
+  --ecc-space-1: 4px;
+  --ecc-space-2: 8px;
+  --ecc-space-3: 12px;
+  --ecc-space-4: 16px;
+  --ecc-space-5: 24px;
+  --ecc-space-6: 32px;
+}

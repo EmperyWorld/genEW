@@ -1,0 +1,25 @@
+{
+  "name": "analytics_service",
+  "version": "0.1.0",
+  "features": [
+    "postgres",
+    "event_ingest",
+    "event_query",
+    "aggregates"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [],
+  "publishes": [
+    "analytics.event.ingested"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": false,
+    "skip_reason": "Trinity analytics peer \u2014 no ECC product feature; health/registry is the readiness surface.",
+    "feature_key": "analytics_service",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

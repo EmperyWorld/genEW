@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CardModule",
+  "type": "object",
+  "required": ["title"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "icon": {
+      "type": "string",
+      "enum": [
+        "trending_up",
+        "people",
+        "attach_money",
+        "speed",
+        "warning",
+        "check_circle",
+        "insights"
+      ]
+    },
+    "value_source": { "type": "string" },
+    "trend_source": { "type": "string" }
+  }
+}

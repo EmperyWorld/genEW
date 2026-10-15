@@ -1,0 +1,68 @@
+# Nervas living-brain inventory (lab LAN)
+
+# Templates live under templates/ — mount or pass to llama.cpp as
+#   --chat-template-file /path/to/<file>.jinja
+# Empery client uses OpenAI-compatible /v1/* ; it does not Jinja-render these.
+# Client must still parse native tool-call text when the model emits it in content.
+
+version: "1"
+
+endpoints:
+  primary_chat:
+    role: chat
+    status: active
+    host_env: EIC_LLM_BASE_URL
+    chat_env: AI_CHAT_BASE_URL
+    default_url: "http://stack2-llama-chat:8080"
+    model_env: EIC_LLAMA_MODEL
+    model_hint: "gemma-4-26B.gguf"
+    family: gemma4
+    template: templates/gemma4_canonical.jinja
+    notes: "Hands / Architect / Implementer / Verifier primary brain"
+
+  secondary_instruct:
+    role: chat_secondary
+    status: optional
+    host_env: EIC_LLM_SECONDARY_BASE_URL
+    default_url: "http://192.168.1.141:8083"
+    model_hint: "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    family: qwen3
+    template: templates/qwen3_instruct.jinja
+    notes: "Cheap instruct / Gate S / short jobs — wire when primary busy; not default yet"
+
+  embedding:
+    role: embedding
+    status: deferred
+    host_env: EIC_EMBEDDING_BASE_URL
+    default_url: "http://192.168.1.141:8081"
+    model_hint: "Qwen3-Embedding-8B-Q4_K_M.gguf"
+    family: qwen3
+    template: templates/qwen3_embedding.jinja
+    notes: "Memory vectors — EIC_EMBEDDING_BACKEND=http later; keep none/stub until wired"
+
+  reranker:
+    role: rerank
+    status: deferred
+    host_env: EIC_RERANK_BASE_URL
+    default_url: "http://192.168.1.141:8082"
+    model_hint: "Qwen3-Reranker-8B.Q4_K_M.gguf"
+    family: qwen3
+    template: templates/qwen3_reranker.jinja
+    notes: "Hybrid retrieval rerank — not wired yet"
+
+tool_call_dialects:
+  gemma4:
+    markers:
+      - "<|tool_call>call:"
+      - "<tool_call|>"
+    parser: gemma_native
+  qwen3:
+    markers:
+      - "<tool_call>"
+      - "</tool_call>"
+    parser: qwen_xml
+  legacy:
+    markers:
+      - "tool_call("
+      - "eic_actions"
+    parser: eic_json

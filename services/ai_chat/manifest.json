@@ -1,0 +1,28 @@
+{
+  "name": "ai_chat",
+  "version": "0.2.0",
+  "features": [
+    "health",
+    "companion_chat",
+    "nervas_peer",
+    "identity_gated_writes"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [
+    "empery_intelligence_core",
+    "identity_service"
+  ],
+  "publishes": [
+    "ai_chat.message.created"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": true,
+    "skip_reason": null,
+    "feature_key": "ai_chat",
+    "route": "/ops/ai-chat",
+    "nav_label_key": "nav.aiChat",
+    "bff_prefix": "/api/v1/ai-chat",
+    "lab": false
+  }
+}

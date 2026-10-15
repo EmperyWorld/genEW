@@ -1,0 +1,20 @@
+{
+  "name": "eic-assembler-cli",
+  "license": "MIT",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "eic-assemble": "./assemble.mjs"
+  },
+  "scripts": {
+    "assemble": "node assemble.mjs"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.28.0",
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.0",
+    "prettier": "^3.6.2"
+  }
+}

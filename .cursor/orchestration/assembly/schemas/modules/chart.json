@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChartModule",
+  "type": "object",
+  "required": ["chart_type", "data_source"],
+  "properties": {
+    "chart_type": {
+      "type": "string",
+      "enum": ["area_line", "bar", "pie", "line"]
+    },
+    "data_source": { "type": "string", "minLength": 1 },
+    "title": { "type": "string" }
+  }
+}

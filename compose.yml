@@ -1,0 +1,592 @@
+# Empery Grand Convergence — Podman rootless / podman-compose compatible.
+# Launch:
+#   ./scripts/ew2_one_click_deploy.sh
+#   # or: cp .env.example .env && mkdir -p .data/eic/models && podman-compose up -d --build
+#
+# SELinux (Fedora): :Z for single-consumer binds; :z for shared orchestration.
+# Named volumes usually need no suffix. Never privileged / label=disable / root docker.sock.
+# Rootless user podman.sock is mounted only into empery_deploy_agent (:z, allowlisted HTTP).
+#
+# Secrets: copy .env.example → .env and set POSTGRES_PASSWORD + IDENTITY_JWT_SECRET
+#   openssl rand -hex 32
+# Schema: AUTO_CREATE_TABLES=false — run Alembic via ew2_one_click_deploy.sh before services start.
+#
+# Market default: ECC_REQUIRE_AUTH=true (mutating ECC routes require JWT).
+# Lab / local demos: set ECC_REQUIRE_AUTH=false in .env to preserve guest write flows.
+#
+# Living Brain (product LLM — operator must keep it up):
+#   Default: host.containers.internal:8080 (brain on same host as Podman).
+#   Set EIC_LLM_BASE_URL / AI_CHAT_BASE_URL in .env for a LAN peer (e.g. http://192.168.x.x:8080).
+#   Market: EIC_AUTONOMOUS_ENABLED default false — enable via compose.lab.yml or .env.
+# Verify: python3 scripts/verify_living_brain.py
+
+name: empery
+
+x-python-common: &python_common
+  build:
+    context: .
+    dockerfile: deploy/docker/Dockerfile.python
+    target: runtime
+  restart: unless-stopped
+  networks: [empery_net]
+  depends_on:
+    - postgres
+    - redis
+  # podman-compose / podman compose: mem_limit + cpus (Compose v2 legacy fields)
+  mem_limit: 512m
+  cpus: 0.5
+  environment: &python_env
+    LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    EVENT_BUS_REDIS_URL: redis://redis:6379/0
+    REDIS_URL: redis://redis:6379/0
+    # Production: never allow silent in-memory bus fallback when Redis is misconfigured.
+    EVENT_BUS_ALLOW_IN_MEMORY: "false"
+    AUTO_CREATE_TABLES: "false"
+    PYTHONUNBUFFERED: "1"
+  user: "1000:1000"
+
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+    ports:
+      # Localhost-only: host-network Brain / lab clients (never 0.0.0.0).
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-eworld}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env — openssl rand -hex 32}
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/postgres/init-databases.sql:/docker-entrypoint-initdb.d/01-init-databases.sql:Z,ro
+    networks: [empery_net]
+    healthcheck:
+      # String form: podman-compose mishandles CMD arrays against postgres entrypoint
+      # Use -d postgres — default DB name equals user and "eworld" DB does not exist
+      test: pg_isready -U ${POSTGRES_USER:-eworld} -d postgres
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: docker.io/library/redis:7-alpine
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.25
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    networks: [empery_net]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  llama-cpp:
+    profiles: ["llm"]
+    image: ${LLAMA_IMAGE:-ghcr.io/ggerganov/llama.cpp:server}
+    restart: unless-stopped
+    mem_limit: 8g
+    cpus: 4.0
+    ports:
+      - "${LLAMA_HOST_PORT:-8080}:8080"
+    volumes:
+      - ${EIC_LLAMA_MODEL_DIR:-./.data/eic/models}:/models:Z,ro
+    environment:
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+    command:
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "-m"
+      - "${EIC_LLAMA_MODEL_FILE:-/models/model.gguf}"
+      - "-c"
+      - "${LLAMA_CTX:-4096}"
+    networks: [empery_net]
+    # No privileged / no GPU flags by default (add --device nvidia via override if needed)
+
+  core_auth_service:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.core_auth_service.src.api.main:create_app
+        SERVICE_PORT: "8001"
+    ports:
+      - "8001:8001"
+    environment:
+      <<: *python_env
+      PORT: "8001"
+      CORE_AUTH_PORT: "8001"
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/core_auth
+      AI_CHAT_BASE_URL: ${AI_CHAT_BASE_URL:-http://host.containers.internal:8080/v1/chat/completions}
+      AI_CHAT_MODEL: ${AI_CHAT_MODEL:-local}
+
+  analytics_service:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.analytics_service.src.api.main:create_app
+        SERVICE_PORT: "8002"
+    ports:
+      - "8002:8002"
+    environment:
+      <<: *python_env
+      PORT: "8002"
+      ANALYTICS_PORT: "8002"
+      ANALYTICS_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/analytics
+
+  identity_service:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.identity_service.src.api.main:create_app
+        SERVICE_PORT: "8003"
+    ports:
+      - "8003:8003"
+    environment:
+      <<: *python_env
+      PORT: "8003"
+      IDENTITY_PORT: "8003"
+      IDENTITY_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/identity
+      IDENTITY_JWT_SECRET: ${IDENTITY_JWT_SECRET:?Set IDENTITY_JWT_SECRET in .env — openssl rand -hex 32}
+      IDENTITY_CORS_ORIGINS: ${IDENTITY_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://192.168.1.136:5173}
+      IDENTITY_RATE_LIMIT_PER_MINUTE: ${IDENTITY_RATE_LIMIT_PER_MINUTE:-120}
+      # Market: false (no email SMTP — admin token via lab reveal only).
+      IDENTITY_PASSWORD_RESET_REVEAL: ${IDENTITY_PASSWORD_RESET_REVEAL:-false}
+      # Production profile: false (lab may set SEED_DEMO_USER=true in .env)
+      SEED_DEMO_USER: ${SEED_DEMO_USER:-false}
+      # Preferred bootstrap: set SEED_OPERATOR_PASSWORD in .env (never commit).
+      # Seeds admin when users table is empty; ECC login uses Bearer via identity.
+      SEED_OPERATOR_EMAIL: ${SEED_OPERATOR_EMAIL:-admin@eworld.local}
+      SEED_OPERATOR_PASSWORD: ${SEED_OPERATOR_PASSWORD:-}
+      SEED_OPERATOR_DISPLAY_NAME: ${SEED_OPERATOR_DISPLAY_NAME:-Operator}
+
+  task_orchestrator_service:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.task_orchestrator_service.src.api.main:create_app
+        SERVICE_PORT: "8004"
+    ports:
+      - "8004:8004"
+    depends_on:
+      - postgres
+      - redis
+      - identity_service
+    environment:
+      <<: *python_env
+      PORT: "8004"
+      TASK_ORCHESTRATOR_PORT: "8004"
+      TASK_ORCHESTRATOR_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/task_orchestrator
+      IDENTITY_MODE: http
+      IDENTITY_BASE_URL: http://identity_service:8003
+
+  intelligence_service:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.intelligence_service.src.api.main:create_app
+        SERVICE_PORT: "8005"
+    ports:
+      - "8005:8005"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      <<: *python_env
+      PORT: "8005"
+      INTELLIGENCE_PORT: "8005"
+      INTELLIGENCE_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/intelligence
+      INTELLIGENCE_USE_FAKE_AI: ${INTELLIGENCE_USE_FAKE_AI:-false}
+      AI_CHAT_ALLOW_NO_KEY: "true"
+      AI_CHAT_FALLBACK_FAKE: "false"
+      AI_CHAT_BASE_URL: ${AI_CHAT_BASE_URL:-http://host.containers.internal:8080/v1/chat/completions}
+      AI_CHAT_MODEL: ${AI_CHAT_MODEL:-local}
+      AI_CHAT_API_KEY: ${AI_CHAT_API_KEY:-}
+
+  desktop_shell:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.desktop_shell.src.api.main:create_app
+        SERVICE_PORT: "8020"
+    ports:
+      - "8020:8020"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      # Scaffolded app catalog overlays (service → desktop icon/window)
+      - ./.cursor/orchestration/eic/desktop_catalog:/app/desktop_catalog:z
+    environment:
+      <<: *python_env
+      PORT: "8020"
+      DESKTOP_SHELL_PORT: "8020"
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/desktop_shell
+      DESKTOP_SHELL_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/desktop_shell
+      DESKTOP_CATALOG_DIR: /app/desktop_catalog
+      DESKTOP_SHELL_CORS_ORIGINS: ${DESKTOP_SHELL_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174,http://127.0.0.1:5175,http://localhost:5175}
+
+  image_studio:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.image_studio.src.api.main:create_app
+        SERVICE_PORT: "8021"
+    ports:
+      - "8021:8021"
+    depends_on:
+      - redis
+    volumes:
+      - ./services/image_studio/workflows:/app/services/image_studio/workflows:ro,z
+    environment:
+      <<: *python_env
+      PORT: "8021"
+      IMAGE_STUDIO_PORT: "8021"
+      # Comfy on host — use host.containers.internal from bridge (LAN IP hairpins fail).
+      COMFY_BASE_URL: ${COMFY_BASE_URL:-http://host.containers.internal:31003}
+      IMAGE_STUDIO_CORS_ORIGINS: ${IMAGE_STUDIO_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}
+
+  video_studio:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.video_studio.src.api.main:create_app
+        SERVICE_PORT: "8022"
+    ports:
+      - "8022:8022"
+    depends_on:
+      - redis
+    volumes:
+      - ./services/video_studio/workflows:/app/services/video_studio/workflows:ro,z
+    environment:
+      <<: *python_env
+      PORT: "8022"
+      VIDEO_STUDIO_PORT: "8022"
+      COMFY_BASE_URL: ${COMFY_BASE_URL:-http://host.containers.internal:31003}
+      VIDEO_STUDIO_CORS_ORIGINS: ${VIDEO_STUDIO_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}
+
+  music_forge:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.music_forge.src.api.main:create_app
+        SERVICE_PORT: "8023"
+    ports:
+      - "8023:8023"
+    depends_on:
+      - redis
+    volumes:
+      - ./services/music_forge/workflows:/app/services/music_forge/workflows:ro,z
+    environment:
+      <<: *python_env
+      PORT: "8023"
+      MUSIC_FORGE_PORT: "8023"
+      COMFY_BASE_URL: ${COMFY_BASE_URL:-http://host.containers.internal:31003}
+      MUSIC_FORGE_CORS_ORIGINS: ${MUSIC_FORGE_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}
+
+  site_studio:
+    <<: *python_common
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.site_studio.src.api.main:create_app
+        SERVICE_PORT: "8024"
+    ports:
+      - "8024:8024"
+    depends_on:
+      - redis
+      - empery_intelligence_core
+    environment:
+      <<: *python_env
+      PORT: "8024"
+      SITE_STUDIO_PORT: "8024"
+      EIC_API_BASE: ${EIC_API_BASE:-http://empery_intelligence_core:8007}
+      SITE_STUDIO_CORS_ORIGINS: ${SITE_STUDIO_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}
+
+  # Command Reflex sidecar: rootless podman.sock + path-identity workspace mount.
+  # Allowlisted HTTP only (compose up/build/ps + health). No privileged / label=disable.
+  empery_deploy_agent:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.deploy_agent
+      target: runtime
+    restart: unless-stopped
+    user: "1000:1000"
+    userns_mode: keep-id
+    # SELinux: container_runtime_t may talk to the user podman.sock (:z).
+    # This is NOT label=disable — domain transition only for the deploy agent.
+    security_opt:
+      - label=type:container_runtime_t
+    mem_limit: 512m
+    cpus: 0.5
+    networks: [empery_net]
+    ports:
+      - "127.0.0.1:8010:8010"
+    volumes:
+      # Path identity: host Podman resolves bind mounts against this absolute path.
+      - ${EMPERY_HOST_WORKSPACE:?Set EMPERY_HOST_WORKSPACE to the absolute repo path}:${EMPERY_HOST_WORKSPACE}:z
+      # Shared SELinux label on the rootless user socket (:z — never label=disable).
+      - ${PODMAN_SOCKET:-/run/user/1000/podman/podman.sock}:/run/podman/podman.sock:z
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PORT: "8010"
+      DEPLOY_AGENT_PORT: "8010"
+      EMPERY_HOST_WORKSPACE: ${EMPERY_HOST_WORKSPACE:?Set EMPERY_HOST_WORKSPACE to the absolute repo path}
+      CONTAINER_HOST: unix:///run/podman/podman.sock
+      DOCKER_HOST: unix:///run/podman/podman.sock
+      BUILDAH_FORMAT: docker
+      DEPLOY_AGENT_REQUIRE_SOCKET: "true"
+      # Cold-start: probe retries after compose up (genesis verify must not flake)
+      DEPLOY_AGENT_HEALTH_TIMEOUT_S: ${DEPLOY_AGENT_HEALTH_TIMEOUT_S:-8}
+      DEPLOY_AGENT_HEALTH_RETRIES: ${DEPLOY_AGENT_HEALTH_RETRIES:-12}
+      DEPLOY_AGENT_HEALTH_BACKOFF_S: ${DEPLOY_AGENT_HEALTH_BACKOFF_S:-2}
+
+  # Mechanics sidecar — gRPC Assemble + Verify (Brain peers via empery_net).
+  empery_assembler:
+    <<: *python_common
+    userns_mode: keep-id
+    mem_limit: 1024m
+    cpus: 1.0
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.assembler
+      target: runtime
+    depends_on:
+      - redis
+    ports:
+      # Host bind localhost-only; peers reach via empery_net DNS.
+      - "127.0.0.1:50051:50051"
+      - "127.0.0.1:8011:8011"
+    volumes:
+      - ./core:/app/core:z
+      - ./services:/app/services:z
+      - ./apps/empery_control_center:/app/apps/empery_control_center:z
+      - ./apps/empery_desktop:/app/apps/empery_desktop:z
+      - ./.cursor/orchestration:/app/.cursor/orchestration:z
+      - ./reference:/app/reference:z,ro
+    environment:
+      <<: *python_env
+      PORT: "8011"
+      ASSEMBLER_GRPC_HOST: "0.0.0.0"
+      ASSEMBLER_HEALTH_HOST: "0.0.0.0"
+      ASSEMBLER_GRPC_PORT: "50051"
+      ASSEMBLER_HEALTH_PORT: "8011"
+      ASSEMBLER_WORKSPACE: /app
+      EMPERY_HOST_WORKSPACE: ${EMPERY_HOST_WORKSPACE:-}
+
+  empery_intelligence_core:
+    <<: *python_common
+    # Rootless: map host UID into container so uid 1000 can write host binds.
+    userns_mode: keep-id
+    mem_limit: 1536m
+    cpus: 1.0
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.eic
+      target: runtime
+      args:
+        SERVICE_APP: services.empery_intelligence_core.src.api.main:create_app
+        SERVICE_PORT: "8007"
+    ports:
+      - "127.0.0.1:8007:8007"
+    depends_on:
+      - postgres
+      - redis
+      - empery_deploy_agent
+      - desktop_shell
+      - empery_assembler
+    volumes:
+      - eic_data:/data/eic
+      - ./.cursor/orchestration:/app/.cursor/orchestration:z
+      # Prompt templates for HeadlessAgentLoop (not baked into the Python image)
+      - ./.cursor/agents:/app/.cursor/agents:z
+      - ./.cursor/skills:/app/.cursor/skills:z
+      # Reflex Hands: persist service scaffolds + compose fragments on the host
+      - ./services:/app/services:z
+      - ./deploy:/app/deploy:z
+      # Hot core (registry.unregister etc.) without image rebuild
+      - ./core:/app/core:z
+      # ECC product UI (service-ui U1–U9) — Hands must write feature/client/nav/i18n
+      - ./apps/empery_control_center:/app/apps/empery_control_center:z
+      # Product desktop host — Hands mount apps into shell windows
+      - ./apps/empery_desktop:/app/apps/empery_desktop:z
+      # EliteEW extract corpus (read-only) — assemble from parts, do not invent
+      - ./reference:/app/reference:z,ro
+      - ./compose.yml:/app/compose.yml:z,ro
+      # Keep root reflex overlay mirrored from ServiceScaffoldAction.
+      - ./compose.reflex.yml:/app/compose.reflex.yml:z
+    environment:
+      <<: *python_env
+      PORT: "8007"
+      EIC_API_PORT: "8007"
+      EIC_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-eworld}:${POSTGRES_PASSWORD}@postgres:5432/eic
+      # Hands CREATE DATABASE for newborn services (apply_database_provision).
+      POSTGRES_USER: ${POSTGRES_USER:-eworld}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env — openssl rand -hex 32}
+      POSTGRES_HOST: postgres
+      EIC_POSTGRES_ADMIN_URL: ${EIC_POSTGRES_ADMIN_URL:-}
+      EIC_AUTO_CREATE_TABLES: "false"
+      EIC_PROVIDER: ${EIC_PROVIDER:-local}
+      EIC_LLM_BASE_URL: ${EIC_LLM_BASE_URL:-http://host.containers.internal:8080}
+      EIC_LLAMA_MODEL: ${EIC_LLAMA_MODEL:-/models/gemma-4-26B.gguf}
+      # Honest default: living llama.cpp at :8080 does NOT serve /embeddings unless --embeddings
+      EIC_EMBEDDING_BACKEND: ${EIC_EMBEDDING_BACKEND:-none}
+      EIC_USE_FAKE_NERVAS: "false"
+      EIC_ALLOW_FAKE_NERVAS_STUB: "false"
+      EIC_ALLOW_AUTONOMOUS_FAKES: "false"
+      EIC_CORS_ORIGINS: ${EIC_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174}
+      # Market default false; lab/stand: compose.lab.yml or EIC_AUTONOMOUS_ENABLED=true in .env
+      EIC_AUTONOMOUS_ENABLED: ${EIC_AUTONOMOUS_ENABLED:-false}
+      EIC_AGENT_EXEC_MODE: ${EIC_AGENT_EXEC_MODE:-workspace}
+      # Live desktop catalog registration after scaffold (best-effort)
+      DESKTOP_SHELL_API_BASE: ${DESKTOP_SHELL_API_BASE:-http://desktop_shell:8020}
+      EIC_WORKSPACE_ROOT: /app
+      # Reflex Hands: allow Implementer to write services/** (deny .env/secrets still apply).
+      # Security: keep false only when autonomy must be read-only; lab/genesis default true.
+      EIC_ENGINE_ALLOW_SERVICE_WRITES: ${EIC_ENGINE_ALLOW_SERVICE_WRITES:-true}
+      EIC_AUTO_SCAFFOLD_ON_IMPLEMENT: ${EIC_AUTO_SCAFFOLD_ON_IMPLEMENT:-true}
+      EIC_AUTO_DEPLOY_ON_IMPLEMENT: ${EIC_AUTO_DEPLOY_ON_IMPLEMENT:-true}
+      # In-loop deploy via empery_deploy_agent (primary). Legacy host compose reflex stays off.
+      EIC_DEPLOY_AGENT_URL: ${EIC_DEPLOY_AGENT_URL:-http://empery_deploy_agent:8010}
+      EIC_REQUIRE_DEPLOY_AGENT: ${EIC_REQUIRE_DEPLOY_AGENT:-true}
+      # Mechanics + Auditor sidecar (production path when empery_assembler is in stack).
+      EIC_ASSEMBLER_TRANSPORT: ${EIC_ASSEMBLER_TRANSPORT:-grpc}
+      EIC_ASSEMBLER_GRPC_TARGET: ${EIC_ASSEMBLER_GRPC_TARGET:-empery_assembler:50051}
+      EIC_ASSEMBLER_GRPC_TIMEOUT_S: ${EIC_ASSEMBLER_GRPC_TIMEOUT_S:-300}
+      # Empty inherits assembler transport/target.
+      EIC_VERIFIER_TRANSPORT: ${EIC_VERIFIER_TRANSPORT:-}
+      EIC_VERIFIER_GRPC_TARGET: ${EIC_VERIFIER_GRPC_TARGET:-}
+      EIC_ALLOW_COMPOSE_COMMANDS: ${EIC_ALLOW_COMPOSE_COMMANDS:-false}
+      EIC_ECC_REGISTRY_REFRESH_URL: ${EIC_ECC_REGISTRY_REFRESH_URL:-http://empery_control_center_api:8006/api/v1/registry/refresh}
+      EIC_MESH_TOKEN: ${EMPERY_MESH_TOKEN:-}
+      EIC_ORCHESTRATION_ROOT: /app/.cursor/orchestration
+      EIC_AGENTS_ROOT: /app/.cursor/agents
+      EIC_SKILLS_ROOT: /app/.cursor/skills
+
+  empery_control_center_api:
+    <<: *python_common
+    userns_mode: keep-id
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.python
+      target: runtime
+      args:
+        SERVICE_APP: services.empery_control_center_api.src.api.main:create_app
+        SERVICE_PORT: "8006"
+    ports:
+      # Host UI (LAN bake VITE_ECC_API_BASE=http://192.168.x.x:8006) needs a non-loopback publish.
+      # In-net peers still use empery_control_center_api:8006.
+      - "8006:8006"
+    depends_on:
+      - postgres
+      - redis
+      - empery_intelligence_core
+    volumes:
+      - ./.cursor/orchestration:/app/.cursor/orchestration:z
+      # Hot registry + ServiceManifest schema (publishes/subscribes) without image rebuild
+      - ./core:/app/core:z
+      - ./services:/app/services:z
+      - logs:/var/log/empery:Z
+    environment:
+      <<: *python_env
+      PORT: "8006"
+      ECC_API_PORT: "8006"
+      ECC_ORCHESTRATION_ROOT: /app/.cursor/orchestration
+      ECC_AUTONOMOUS_GATEWAY: "true"
+      ECC_ALLOW_DEMO_RUNNER: ${ECC_ALLOW_DEMO_RUNNER:-false}
+      # Compose DNS — ECC proxies autonomous routes to EIC (not localhost)
+      EIC_API_BASE: ${EIC_API_BASE:-http://empery_intelligence_core:8007}
+      # Include LAN UI origins (host IP + client) — see .env.example "LAN access"
+      ECC_CORS_ORIGINS: ${ECC_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://192.168.1.136:5173,http://127.0.0.1:5174,http://localhost:5174,http://192.168.1.136:5174,http://127.0.0.1:5175,http://localhost:5175}
+      # Registry health probes (name=base URL). Dynamic bases also load from
+      # .cursor/orchestration/eic/dynamic_health_bases.json (reflex scaffold).
+      ECC_SERVICE_HEALTH_BASES: ${ECC_SERVICE_HEALTH_BASES:-core_auth_service=http://core_auth_service:8001,analytics_service=http://analytics_service:8002,identity_service=http://identity_service:8003,task_orchestrator_service=http://task_orchestrator_service:8004,intelligence_service=http://intelligence_service:8005,empery_intelligence_core=http://empery_intelligence_core:8007,empery_deploy_agent=http://empery_deploy_agent:8010,empery_assembler=http://empery_assembler:8011,desktop_shell=http://desktop_shell:8020,image_studio=http://image_studio:8021,video_studio=http://video_studio:8022,music_forge=http://music_forge:8023,site_studio=http://site_studio:8024}
+      # eic:ui-env:ai_chat
+      AI_CHAT_API_BASE: ${AI_CHAT_API_BASE:-http://ai_chat:8035}
+      ECC_HEALTH_PROBE_TIMEOUT_MS: ${ECC_HEALTH_PROBE_TIMEOUT_MS:-2000}
+      ECC_PUBLISH_EIC_INTENTIONS: ${ECC_PUBLISH_EIC_INTENTIONS:-true}
+      IDENTITY_API_BASE: ${IDENTITY_API_BASE:-http://identity_service:8003}
+      # Market default: true. Lab sets ECC_REQUIRE_AUTH=false in .env for guest mutating flows.
+      ECC_REQUIRE_AUTH: ${ECC_REQUIRE_AUTH:-true}
+      # Shared secret for POST /registry/refresh (EIC→ECC). Empty = lab open refresh; set for market.
+      ECC_MESH_TOKEN: ${EMPERY_MESH_TOKEN:-}
+
+  empery_control_center_ui:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.ui
+      target: runtime
+      args:
+        # Prefer host LAN IP for baked builds; UI also remaps localhost→page host at runtime
+        VITE_ECC_API_BASE: ${VITE_ECC_API_BASE:-http://127.0.0.1:8006}
+        VITE_ECC_WS_URL: ${VITE_ECC_WS_URL:-ws://127.0.0.1:8006/api/v1/ws/events}
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    ports:
+      - "0.0.0.0:${ECC_UI_HOST_PORT:-5173}:8080"
+    depends_on:
+      - empery_control_center_api
+    networks: [empery_net]
+
+  empery_desktop_ui:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.desktop
+      target: runtime
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    ports:
+      - "0.0.0.0:${DESKTOP_UI_HOST_PORT:-5174}:8080"
+    depends_on:
+      - desktop_shell
+      - empery_control_center_ui
+    networks: [empery_net]
+
+networks:
+  empery_net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+  eic_data:
+  logs:

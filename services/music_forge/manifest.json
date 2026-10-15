@@ -1,0 +1,25 @@
+{
+  "name": "music_forge",
+  "version": "0.1.0",
+  "features": [
+    "text_to_music",
+    "comfy_proxy",
+    "desktop_ui"
+  ],
+  "entry_point": "src/api/main.py",
+  "dependencies": [],
+  "publishes": [
+    "music_forge.job.queued",
+    "music_forge.job.completed"
+  ],
+  "subscribes": [],
+  "ui": {
+    "required": false,
+    "skip_reason": "Backend peer API only; ECC product UI deferred \u2014 Desktop/API health is the readiness surface.",
+    "feature_key": "music_forge",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

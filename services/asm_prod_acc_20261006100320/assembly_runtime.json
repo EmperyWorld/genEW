@@ -1,0 +1,20 @@
+{
+  "service_name": "asm_prod_acc_20261006100320",
+  "blueprint_id": "asm_prod_acc_20261006100320",
+  "blueprint_version": "1.1.0",
+  "target_module": "Dashboard_Standard",
+  "scaffold_profile": "ops_dashboard",
+  "composition_ids": [
+    "favorites_slot",
+    "metric_card_revenue",
+    "metric_card_users",
+    "metric_card_conversion",
+    "revenue_trend_chart"
+  ],
+  "data_sources": [
+    "/api/v1/dashboard",
+    "value"
+  ],
+  "assembler_version": "v1",
+  "widget_count": 5
+}

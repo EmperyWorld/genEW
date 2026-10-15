@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://empery.local/assembly/manifest.schema.json",
+  "title": "AssemblyManifest",
+  "type": "object",
+  "required": [
+    "blueprint_id",
+    "blueprint_version",
+    "target_module",
+    "composition"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "blueprint_id": { "type": "string", "minLength": 1 },
+    "blueprint_version": { "type": "string", "minLength": 1 },
+    "target_module": {
+      "type": "string",
+      "enum": ["Dashboard_Standard", "Companion_Chat", "Studio_Job", "Generic"]
+    },
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "theme": {
+          "type": "string",
+          "enum": ["light", "dark", "system"]
+        }
+      }
+    },
+    "composition": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/composition_item" }
+    },
+    "layout_overrides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component_id"],
+        "properties": {
+          "component_id": { "type": "string" },
+          "style_props": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "composition_item": {
+      "type": "object",
+      "required": ["component_id", "mapping"],
+      "additionalProperties": true,
+      "properties": {
+        "component_id": { "type": "string", "minLength": 1 },
+        "component": {
+          "type": "string",
+          "enum": ["Card", "Chart", "MetricTile", "Table", "Layout"]
+        },
+        "widget_type": {
+          "type": "string",
+          "enum": ["card", "chart", "table", "metric", "header", "sidebar"]
+        },
+        "mapping": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/prop_mapping" }
+        },
+        "data_source": { "type": "string" }
+      }
+    },
+    "prop_mapping": {
+      "type": "object",
+      "required": ["prop_name", "source_type"],
+      "additionalProperties": true,
+      "properties": {
+        "prop_name": { "type": "string", "minLength": 1 },
+        "source_type": {
+          "type": "string",
+          "enum": ["static", "dynamic"]
+        },
+        "value": {},
+        "data_path": { "type": "string" }
+      }
+    }
+  }
+}

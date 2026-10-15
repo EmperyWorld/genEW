@@ -1,0 +1,22 @@
+{
+  "name": "empery_assembler",
+  "version": "0.1.0",
+  "features": [
+    "health",
+    "grpc_assembler",
+    "config_driven_assembly_sidecar"
+  ],
+  "entry_point": "src/main.py",
+  "dependencies": [],
+  "publishes": [],
+  "subscribes": [],
+  "ui": {
+    "required": false,
+    "skip_reason": "Mechanics gRPC sidecar — invoked by EIC Brain; no product feature page.",
+    "feature_key": "empery_assembler",
+    "route": null,
+    "nav_label_key": null,
+    "bff_prefix": null,
+    "lab": false
+  }
+}

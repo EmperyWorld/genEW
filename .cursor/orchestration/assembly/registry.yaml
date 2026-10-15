@@ -1,0 +1,62 @@
+# Configuration-Driven Assembly — profile → module schemas + target template.
+# Hands Assembler loads this; LLM may only fill props within listed enums.
+
+version: "1"
+
+profiles:
+  ops_dashboard:
+    assembly_mode: config_driven
+    target_module: Dashboard_Standard
+    module_schemas:
+      - modules/dashboard.json
+      - modules/card.json
+      - modules/chart.json
+    freeze_owned_by: assembler
+    allow_llm_writes:
+      - ".cursor/orchestration/designs/*_blueprint.json"
+      - ".cursor/orchestration/eic/assembly/*_manifest.json"
+      - ".cursor/orchestration/designs/*_design.json"
+      - ".cursor/orchestration/designs/*_design.md"
+    deny_llm_writes:
+      - "services/*/src/**"
+      - "apps/empery_desktop/src/shell/mounts/**"
+      - "apps/empery_control_center/src/features/**"
+
+  companion_chat:
+    assembly_mode: config_driven
+    target_module: Companion_Chat
+    module_schemas:
+      - modules/companion.json
+      - modules/chat_panel.json
+      - modules/composer.json
+    freeze_owned_by: assembler
+    allow_llm_writes:
+      - ".cursor/orchestration/designs/*_blueprint.json"
+      - ".cursor/orchestration/eic/assembly/*_manifest.json"
+      - ".cursor/orchestration/designs/*_design.json"
+      - ".cursor/orchestration/designs/*_design.md"
+    deny_llm_writes:
+      - "services/*/src/**"
+      - "apps/empery_desktop/src/shell/mounts/**"
+      - "apps/empery_control_center/src/features/**"
+
+  studio_job:
+    assembly_mode: config_driven
+    target_module: Studio_Job
+    module_schemas:
+      - modules/studio.json
+      - modules/job_form.json
+      - modules/job_list.json
+    freeze_owned_by: assembler
+    allow_llm_writes:
+      - ".cursor/orchestration/designs/*_blueprint.json"
+      - ".cursor/orchestration/eic/assembly/*_manifest.json"
+      - ".cursor/orchestration/designs/*_design.json"
+      - ".cursor/orchestration/designs/*_design.md"
+    deny_llm_writes:
+      - "services/*/src/**"
+      - "apps/empery_desktop/src/shell/mounts/**"
+      - "apps/empery_control_center/src/features/**"
+
+defaults:
+  assembly_mode: legacy

@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "name": "Empery",
+    "shell": "Рабочий стол",
+    "booting": "загрузка…",
+    "appsCount": "{{count}} прил."
+  },
+  "taskbar": {
+    "aria": "Панель задач",
+    "start": "Пуск",
+    "startAria": "Меню Пуск",
+    "pinnedAria": "Закреплённые приложения",
+    "clockAria": "Часы"
+  },
+  "startMenu": {
+    "title": "Empery",
+    "subtitle": "Пуск · запуск приложений",
+    "searchPlaceholder": "Поиск приложений",
+    "closeAria": "Закрыть меню Пуск",
+    "empty": "Ничего не найдено",
+    "aria": "Меню Пуск",
+    "deleteApp": "Удалить приложение",
+    "deleteConfirm": "Удалить пользовательское приложение «{{name}}»? Капсула сервиса будет снята.",
+    "deleteDenied": "Это приложение нельзя удалить (seed или spine).",
+    "deleteFailed": "Не удалось удалить"
+  },
+  "window": {
+    "minimize": "Свернуть",
+    "maximize": "Развернуть",
+    "restore": "Восстановить",
+    "close": "Закрыть",
+    "resize": "Изменить размер"
+  },
+  "errors": {
+    "bootstrapHint": "Запустите desktop_shell на :8020 или задайте VITE_DESKTOP_SHELL_API_BASE."
+  },
+  "lang": {
+    "ru": "RU",
+    "en": "EN",
+    "switchAria": "Язык интерфейса"
+  }
+}

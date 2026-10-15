@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+:root {
+  color-scheme: dark;
+  --desktop-bg: #070b12;
+  --desktop-accent: 94 234 212;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  background: var(--desktop-bg);
+  color: #e8eef7;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 12%, rgb(var(--desktop-accent) / 0.16), transparent 34%),
+    radial-gradient(circle at 82% 0%, rgba(255, 255, 255, 0.05), transparent 28%),
+    linear-gradient(160deg, #0a101a 0%, #070b12 48%, #0c1420 100%);
+}
+
+/* Wallpaper plane; accents follow --desktop-accent from bootstrap. */
+#desktop-main {
+  background-color: var(--desktop-bg);
+}
+
+/* Desktop shell chrome tokens (EliteEW-inspired, Empery-owned). */
+[data-desktop-window-id] {
+  --desktop-window-radius: 0.75rem;
+}
+
+[data-desktop-taskbar] button:focus-visible,
+[data-desktop-icon-id]:focus-visible,
+[data-desktop-window-control]:focus-visible {
+  outline: 2px solid rgb(var(--desktop-accent) / 0.55);
+  outline-offset: 2px;
+}
